@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* { font-family: 'Inter', sans-serif; }
+
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    transition: width 0.25s ease, min-width 0.25s ease;
+}
+.sidebar.collapsed {
+    width: 56px;
+    min-width: 56px;
+}
+
+/* Hide text labels when collapsed */
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .sidebar-title {
+    display: none;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #52525b;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.nav-item:hover {
+    background: #f1f5f9;
+    color: #18181b;
+}
+.nav-item.active {
+    background: #eff6ff;
+    color: #2563eb;
+}
+.nav-item.active .nav-icon {
+    color: #2563eb;
+}
+
+.nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #71717a;
+    transition: color 0.15s;
+}
+
+
+.section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    padding: 0 12px;
+    margin-bottom: 4px;
+}
+.sidebar.collapsed .section-label {
+    display: none;
+}
+
+.divider {
+    height: 1px;
+    background: #f1f1f1;
+    margin: 8px 0;
+}
+
+/* ==================== Graph Models page content styles ==================== */
+:root{
+    --rail-w: 56px;
+    --line: #c5cfe8;
+    --ink: #2d3a6b;
+}
+*{ box-sizing:border-box; }
+
+/* ---------- Segmented tab pills ---------- */
+.type-tabs{
+    display:flex; align-items:center; gap:22px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #eef0f4;
+}
+.type-tab{
+    display:flex; align-items:center; gap:7px;
+    font-size:13.5px; color:#8b93a7; cursor:pointer;
+    padding:4px 2px;
+    border-bottom:2px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+    white-space:nowrap;
+}
+.type-tab .dot{
+    width:7px; height:7px; border-radius:999px; background:#d5dae6;
+    transition: background .15s ease;
+}
+.type-tab:hover{ color:#5b6478; }
+.type-tab.active{ color:#2d3a6b; font-weight:600; border-color:#2563eb; }
+.type-tab.active .dot{ background:#2563eb; }
+
+/* ---------- Content card ---------- */
+.type-panel{ display:none; }
+.type-panel.active{ display:grid; }
+
+.graph-box{
+    background:#f6f7fa;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    min-height: 260px;
+}
+.graph-box .box-label{
+    position:absolute;
+    top:16px; left:20px;
+    font-size:14px; font-weight:600; color:#27272a;
+}
+
+.desc-list{ list-style:none; padding:0; margin:0; }
+.desc-list li{
+    position:relative;
+    padding-left:16px;
+    font-size:14px;
+    line-height:1.7;
+    color:#4b5266;
+    margin-bottom:10px;
+}
+.desc-list li::before{
+    content:'';
+    position:absolute; left:0; top:9px;
+    width:5px; height:5px; border-radius:999px;
+    background:#2563eb;
+}
+
+.expand-btn{
+    width:32px; height:32px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:8px; border:1px solid #e4e7ee;
+    color:#8b93a7; cursor:pointer;
+}
+.expand-btn:hover{ background:#f6f7fa; color:#2563eb; }
+
+.nav-circle{
+    width:38px; height:38px;
+    border-radius:999px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid #e4e7ee;
+    color:#5b6478;
+    cursor:pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-circle:hover{ background:#f6f7fa; }
+.nav-circle.primary{ background:#2563eb; border-color:#2563eb; color:#fff; }
+.nav-circle.primary:hover{ background:#1d4ed8; }
+
+.learn-more-btn{
+    font-size:13.5px; font-weight:600; color:#2563eb;
+    border:1px solid #d7deef; border-radius:999px;
+    padding:8px 18px;
+    background:#fff;
+    cursor:pointer;
+}
+.learn-more-btn:hover{ background:#eff6ff; }
