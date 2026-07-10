@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Terminology</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="help.css">
+    <style>
+        /* ::before bullet — pseudo-element not in Tailwind */
+        .step-li { position: relative; padding-left: 20px; }
+        .step-li::before {
+            content: ''; position: absolute; left: 0; top: 9px;
+            width: 6px; height: 6px; border-radius: 999px; background: #2563eb;
+        }
+
+        /* Tab panel toggle — JS swaps .active */
+        .term-panel { display: none; }
+        .term-panel.active { display: block; }
+
+        /* Quiz state classes toggled by JS */
+        .quiz-opt.correct { border-color: #22c55e !important; background: #f0fdf4 !important; color: #15803d !important; font-weight: 600; }
+        .quiz-opt.wrong   { border-color: #f43f5e !important; background: #fff1f2 !important; color: #be123c !important; }
+        .quiz-opt.disabled { cursor: not-allowed; opacity: .6; }
+        .feedback-box { display: none; }
+        .feedback-box.show { display: block; }
+
+        /* @keyframes — not in Tailwind */
+        @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
+        .pop { animation: pop 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gray-50 flex min-h-screen">
+
+    <aside id="sidebar" class="sidebar bg-white border-r border-zinc-100 flex flex-col py-4 px-3 gap-1 h-screen sticky top-0 overflow-hidden">
+        <div class="flex items-center justify-between mb-3 px-1">
+            <span class="sidebar-title font-bold text-xl text-zinc-800 tracking-tight">Graph</span>
+            <button class="flex justify-center items-center w-[28px] h-[28px] border border-zinc-300 rounded bg-white transition duration-150 cursor-pointer hover:bg-gray-200" id="toggleBtn" title="Toggle sidebar">
+                <i id="prevIcon" class="bi bi-chevron-double-left" style="color: gray;"></i>
+                <i id="nextIcon" class="bi bi-chevron-double-right hidden" style="color: gray;"></i>
+            </button>
+        </div>
+        <div class="divider"></div>
+        <nav class="flex flex-col gap-0.5 mt-1">
+            <p class="section-label">Chapters</p>
+            <a href="index.html" class="nav-item" title="Graph Models">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/>
+                    <line x1="8.5" y1="11" x2="15.5" y2="7.5"/><line x1="8.5" y1="13" x2="15.5" y2="16.5"/>
+                </svg>
+                <span class="nav-label">Graph Models</span>
+            </a>
+            <a href="undirected_graph.html" class="nav-item active" title="Undirected Graph">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                </svg>
+                <span class="nav-label">Undirected Graph</span>
+            </a>
+            <a href="#" class="nav-item" title="Directed Graphs">
+                <i class="bi bi-table"></i>
+                <span class="nav-label">Directed Graph</span>
+            </a>
+            <a href="#" class="nav-item" title="Bipartite Graphs">
+                <i class="bi bi-table"></i>
+                <span class="nav-label">Bipartite Graphs</span>
+            </a>
+            <a href="#" class="nav-item" title="Representing Graphs">
+                <i class="bi bi-braces"></i>
+                <span class="nav-label">Representing Graphs</span>
+            </a>
+            <div class="divider mt-2"></div>
+            <p class="section-label mt-1">Quiz</p>
+            <a href="#" class="nav-item" title="Graphs Part1">
+                <i class="bi bi-1-circle"></i>
+                <span class="nav-label">Graphs Part1</span>
+            </a>
+            <a href="#" class="nav-item" title="Graphs Part2">
+                <i class="bi bi-2-circle"></i>
+                <span class="nav-label">Graphs Part2</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8 w-full">
+        <h1 class="text-2xl font-semibold text-zinc-800 mb-1">Graph Terminology &amp; Special Types</h1>
+        <p class="text-zinc-400 text-sm mb-8">ศัพท์พื้นฐาน · ดีกรี · ทฤษฎีการจับมือ — บทที่ 2</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+                <!-- tabs -->
+                <div class="flex justify-between items-center w-full border-b border-slate-100">
+                    <div class="flex flex-wrap gap-1.5 px-5 py-4">
+                        <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-blue-600 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer active bg-blue-600 text-white border-blue-600 font-semibold" data-target="adjacent">Adjacent &amp; Incident</button>
+                        <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer" data-target="neighborhood">Neighborhood</button>
+                        <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer" data-target="degree">Degree of a Vertex</button>
+                    </div>
+                    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 mx-5 my-4 rounded-full text-xs font-semibold border border-slate-200 bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-150 cursor-pointer"
+                        id="example-btn" onclick="toggleExample()"> <i class="bi bi-journal-text text-[13px]"></i> ตัวอย่าง
+                    </button>
+                </div>
+
+                <!-- Panel: Adjacent -->
+                <div class="term-panel active p-6" id="tp-adjacent">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3 flex items-center gap-2">
+                                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Definition 1</span>
+                                <span class="text-xs text-zinc-400">Undirected Graph</span>
+                            </div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-4">
+                                สองจุดยอด <strong>u</strong> และ <strong>v</strong> ใน Undirected Graph G เรียกว่า
+                                <span class="relative inline-block group">
+                                    <strong class="text-blue-600 cursor-default border-b border-dashed border-blue-300">Adjacent</strong>
+                                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-zinc-800 text-white text-[11px] font-medium px-2 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none">
+                                    เพื่อนบ้าน
+                                    </span>
+                                </span>
+                                ถ้ามีเส้นเชื่อม <em>e</em> ระหว่างจุด
+                            </p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">เส้น <em>e</em> นั้นเรียกว่า <strong class="text-blue-600">Incident</strong> กับจุดยอด u และ v</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">เส้น <em>e</em> เชื่อม u และ v เข้าด้วยกัน</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ถ้าไม่มีเส้นเชื่อม ทั้งสองจุดไม่ adjacent กัน</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Adjacent &amp; Incident</span>
+                            <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[220px]">
+                                <line x1="50" y1="90" x2="170" y2="50" stroke="#c5cfe8" stroke-width="2"/>
+                                <line x1="50" y1="90" x2="170" y2="130" stroke="#c5cfe8" stroke-width="2"/>
+                                <line x1="170" y1="50" x2="170" y2="130" stroke="#c5cfe8" stroke-width="2"/>
+                                <line x1="50" y1="90" x2="170" y2="50" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="5,3"/>
+                                <text x="108" y="60" font-size="12" fill="#2563eb" font-weight="600">e</text>
+                                <circle cx="50" cy="90" r="7" fill="#2563eb"/>
+                                <circle cx="170" cy="50" r="7" fill="#2563eb"/>
+                                <circle cx="170" cy="130" r="7" fill="#c5cfe8" stroke="#2d3a6b" stroke-width="1.5"/>
+                                <text x="32" y="88" font-size="14" font-weight="700" fill="#2d3a6b">u</text>
+                                <text x="182" y="54" font-size="14" font-weight="700" fill="#2d3a6b">v</text>
+                                <text x="182" y="134" font-size="14" font-weight="500" fill="#8b93a7">w</text>
+                                <text x="110" y="170" font-size="11" fill="#2563eb" text-anchor="middle">u และ v เป็น adjacent กัน</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel: Neighborhood -->
+                <div class="term-panel p-6" id="tp-neighborhood">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3 flex items-center gap-2">
+                                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Definition 2</span>
+                                <span class="text-xs text-zinc-400">Neighborhood</span>
+                            </div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-4">
+                                <strong class="text-blue-600">Neighborhood N(v)</strong> คือ เซตของจุดยอดทั้งหมดที่ adjacent กับ v ใน Graph G = (V, E)
+                            </p>
+                            <ul class="space-y-1 mb-5">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">หรือก็คือ "เพื่อนบ้านทั้งหมด" ของ v</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">v เองไม่นับอยู่ใน N(v)</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ถ้า v ไม่มีเส้นเชื่อมใดเลย: N(v) = ∅</li>
+                            </ul>
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                                <div id="nb-example-content">
+                                    <p class="text-xs text-zinc-400">กดเลือก vertex บนกราฟเพื่อดู neighborhood</p>
+                                </div>
+                                <button id="nb-reset-btn" onclick="nbReset()" disabled class="mt-3 px-3 py-1 text-xs font-medium rounded-lg border border-zinc-200 text-zinc-400 bg-white cursor-not-allowed transition-all">
+                                    รีเซ็ต vertex ที่เลือก
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <svg id="nb-graph" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[220px] cursor-pointer">
+                                <g id="nb-edges"></g>
+                                <g id="nb-nodes"></g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel: Degree -->
+                <div class="term-panel p-6" id="tp-degree">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3 flex items-center gap-2">
+                                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Definition 3</span>
+                                <span class="text-xs text-zinc-400">Degree</span>
+                            </div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">
+                                <strong class="text-blue-600">Degree</strong> ของจุดยอด v คือ จำนวนเส้นเชื่อมที่ incident กับ v เขียนว่า <strong>deg(v)</strong>
+                            </p>
+                            <ul class="space-y-1 mb-5">
+                                <!-- <li class="step-li text-sm leading-7 text-zinc-600 mb-2"><strong>Loop</strong> หนึ่งเส้น นับ degree เพิ่ม <strong class="text-red-500">2</strong></li> -->
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จุดที่ deg = 0 เรียกว่า <strong>Isolated vertex</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จุดที่ deg = 1 เรียกว่า <strong>Pendant vertex</strong></li>
+                            </ul>
+                            <div class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 text-base font-semibold text-blue-700">
+                                deg(v) = จำนวน incident edges
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">deg ของแต่ละจุด</span>
+                            <svg viewBox="0 0 220 185" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[220px]">
+                                <line x1="50" y1="50" x2="170" y2="50" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="50" y1="50" x2="50" y2="140" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="50" y1="50" x2="170" y2="140" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="170" y1="50" x2="170" y2="140" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="50" y1="140" x2="170" y2="140" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <ellipse cx="170" cy="35" rx="14" ry="10" fill="none" stroke="#f59e0b" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="6" fill="#2d3a6b"/>
+                                <circle cx="170" cy="50" r="6" fill="#2d3a6b"/>
+                                <circle cx="50" cy="140" r="6" fill="#2d3a6b"/>
+                                <circle cx="170" cy="140" r="6" fill="#2d3a6b"/>
+                                <text x="36" y="48" font-size="12" font-weight="600" fill="#2d3a6b">w</text>
+                                <text x="178" y="48" font-size="12" font-weight="600" fill="#2d3a6b">x</text>
+                                <text x="36" y="155" font-size="12" font-weight="600" fill="#2d3a6b">y</text>
+                                <text x="178" y="155" font-size="12" font-weight="600" fill="#2d3a6b">z</text>
+                                <text x="50" y="74" font-size="11" fill="#2563eb" text-anchor="middle">deg=4</text>
+                                <text x="170" y="74" font-size="11" fill="#d97706" text-anchor="middle">deg=4*</text>
+                                <text x="50" y="172" font-size="11" fill="#2563eb" text-anchor="middle">deg=2</text>
+                                <text x="170" y="172" font-size="11" fill="#2563eb" text-anchor="middle">deg=2</text>
+                                <text x="110" y="180" font-size="10" fill="#d97706" text-anchor="middle">* loop นับ +2</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================ CARD 2 : WORKED EXAMPLE -->
+            <div id="example-panel" style="display:none" class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+                <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-sm text-zinc-800">ตัวอย่างที่ 1 — Graph G</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">หา degree และ neighborhood ของทุกจุดยอด</p>
+                    </div>
+                    <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Worked Example</span>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative p-5 min-h-[240px]">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Graph G</span>
+                            <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                                <line x1="60" y1="50" x2="160" y2="50" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="60" y1="50" x2="60" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="60" y1="50" x2="160" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="160" y1="50" x2="60" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="160" y1="50" x2="160" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <line x1="60" y1="150" x2="160" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <path d="M55 55 Q -10 100 55 145" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="230" cy="100" r="5" fill="#d1d5db" stroke="#9ca3af" stroke-width="1.5"/>
+                                <circle cx="60" cy="50" r="5.5" fill="#2d3a6b"/>
+                                <circle cx="160" cy="50" r="5.5" fill="#2d3a6b"/>
+                                <circle cx="60" cy="150" r="5.5" fill="#2d3a6b"/>
+                                <circle cx="160" cy="150" r="5.5" fill="#2d3a6b"/>
+                                <text x="47" y="46" font-size="13" font-weight="600" fill="#2d3a6b">w</text>
+                                <text x="168" y="46" font-size="13" font-weight="600" fill="#2d3a6b">x</text>
+                                <text x="47" y="165" font-size="13" font-weight="600" fill="#2d3a6b">y</text>
+                                <text x="168" y="165" font-size="13" font-weight="600" fill="#2d3a6b">z</text>
+                                <text x="240" y="103" font-size="13" font-weight="500" fill="#9ca3af">g</text>
+                                <text x="60" y="35" font-size="11" fill="#2563eb" text-anchor="middle">deg=3</text>
+                                <text x="160" y="35" font-size="11" fill="#2563eb" text-anchor="middle">deg=3</text>
+                                <text x="60" y="175" font-size="11" fill="#2563eb" text-anchor="middle">deg=3</text>
+                                <text x="160" y="175" font-size="11" fill="#2563eb" text-anchor="middle">deg=3</text>
+                                <text x="230" y="120" font-size="11" fill="#9ca3af" text-anchor="middle">deg=0</text>
+                            </svg>
+                        </div>
+                        <div>
+                            <table class="w-full border border-slate-200 rounded-xl overflow-hidden text-left text-sm">
+                                <thead>
+                                    <tr class="bg-slate-50">
+                                        <th class="px-4 py-2.5 text-xs font-semibold text-zinc-500">Vertex</th>
+                                        <th class="px-4 py-2.5 text-xs font-semibold text-zinc-500">deg(v)</th>
+                                        <th class="px-4 py-2.5 text-xs font-semibold text-zinc-500">N(v)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr class="hover:bg-blue-50 transition-colors"><td class="px-4 py-2 font-semibold text-blue-700">w</td><td class="px-4 py-2">3</td><td class="px-4 py-2 font-mono">{x, y, z}</td></tr>
+                                    <tr class="hover:bg-blue-50 transition-colors"><td class="px-4 py-2 font-semibold text-blue-700">x</td><td class="px-4 py-2">3</td><td class="px-4 py-2 font-mono">{w, y, z}</td></tr>
+                                    <tr class="hover:bg-blue-50 transition-colors"><td class="px-4 py-2 font-semibold text-blue-700">y</td><td class="px-4 py-2">3</td><td class="px-4 py-2 font-mono">{w, x, z}</td></tr>
+                                    <tr class="hover:bg-blue-50 transition-colors"><td class="px-4 py-2 font-semibold text-blue-700">z</td><td class="px-4 py-2">3</td><td class="px-4 py-2 font-mono">{w, x, y}</td></tr>
+                                    <tr class="hover:bg-blue-50 transition-colors"><td class="px-4 py-2 font-semibold text-zinc-400">g</td><td class="px-4 py-2 text-zinc-400">0</td><td class="px-4 py-2 font-mono text-zinc-400">∅</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-4 bg-slate-50 border-l-[3px] border-blue-500 rounded-r-xl px-4 py-3.5 text-[13.5px] text-zinc-600 leading-7">
+                                <span class="font-semibold text-blue-700">Verify:</span>
+                                ผลรวม deg ทั้งหมด = 3+3+3+3+0 = <strong>12</strong>
+                                <br> หรือก็คือ 2 × 6 edges
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ CARD 3 : HANDSHAKING THEOREM -->
+        <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50">
+                <p class="font-semibold text-sm text-zinc-800">Theorem 1 — Handshaking Theorem</p>
+                <p class="text-xs text-zinc-400 mt-0.5">กดที่เส้นเชื่อมเพื่อดูว่า degree เพิ่มขึ้นอย่างไร</p>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <div class="mb-4">
+                            <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 mb-3">Theorem 1</span>
+                            <p class="text-sm text-zinc-700 leading-7">ถ้า G = (V, E) เป็น Undirected Graph ที่มี <strong>m edges</strong> แล้ว</p>
+                            <div class="my-4 flex justify-center">
+                                <div class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-xl px-5 py-2.5 text-xl font-semibold text-blue-700">
+                                    2m &nbsp;=&nbsp; Σ deg(v)
+                                </div>
+                            </div>
+                            <p class="text-sm text-zinc-500 leading-7">กล่าวคือ ผลรวมของ degree ทุกจุดยอด เท่ากับ 2 เท่าของจำนวน edge เสมอ</p>
+                        </div>
+                        <div class="bg-slate-50 border-l-[3px] border-blue-500 rounded-r-xl px-4 py-3.5 text-[13.5px] text-zinc-600 leading-7 mb-4">
+                            <strong class="text-blue-700">Proof (ไอเดีย):</strong>
+                            เส้นเชื่อมแต่ละเส้น incident กับจุดยอด 2 ข้าง จึงเพิ่ม degree ทั้งหมด 2 ครั้ง ดังนั้น Σ deg(v) = 2m เสมอ
+                        </div>
+                        <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm text-amber-800">
+                            <strong>Theorem 2 (ตามมา):</strong>
+                            จำนวนจุดยอดที่มี degree เป็น <em>เลขคี่</em> ต้องเป็น <strong>จำนวนคู่</strong> เสมอ
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-xs font-semibold text-zinc-500">ลองกดเพิ่มเส้นเชื่อมดูสิ</p>
+                            <button onclick="resetHS()" class="border border-slate-200 rounded-md px-6 py-1 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 hover:text-blue-500 transition-all cursor-pointer">รีเซ็ต</button>
+                        </div>
+                        
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center p-4 mb-4 min-h-[160px]">
+                            <svg id="hs-svg" viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[260px]">
+                                <circle cx="50" cy="80" r="7" fill="#2563eb"/>
+                                <circle cx="130" cy="30" r="7" fill="#2563eb"/>
+                                <circle cx="210" cy="80" r="7" fill="#2563eb"/>
+                                <circle cx="130" cy="130" r="7" fill="#2563eb"/>
+                                <text x="36" y="78" font-size="13" font-weight="700" fill="#2d3a6b">A</text>
+                                <text x="130" y="18" font-size="13" font-weight="700" fill="#2d3a6b" text-anchor="middle">B</text>
+                                <text x="220" y="78" font-size="13" font-weight="700" fill="#2d3a6b">C</text>
+                                <text x="130" y="150" font-size="13" font-weight="700" fill="#2d3a6b" text-anchor="middle">D</text>
+                                <g id="hs-edges"></g>
+                            </svg>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <button onclick="addEdge('A','B')" class="border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Edge A–B</button>
+                            <button onclick="addEdge('B','C')" class="border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Edge B–C</button>
+                            <button onclick="addEdge('C','D')" class="border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Edge C–D</button>
+                            <button onclick="addEdge('A','D')" class="border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Edge A–D</button>
+                            <button onclick="addEdge('A','C')" class="border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Edge A–C</button>
+                            <button onclick="addEdge('B','D')" class="border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Edge B–D</button>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm">
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-1 mb-3">
+                                <div>deg(A) = <strong id="dA">0</strong></div>
+                                <div>deg(B) = <strong id="dB">0</strong></div>
+                                <div>deg(C) = <strong id="dC">0</strong></div>
+                                <div>deg(D) = <strong id="dD">0</strong></div>
+                            </div>
+                            <div class="border-t border-slate-200 pt-3 flex items-center justify-between">
+                                <span class="text-xs text-zinc-500">m (edges) = <strong id="mCount">0</strong></span>
+                                <span class="text-xs text-zinc-500">Σ deg = <strong id="sumDeg">0</strong></span>
+                                <span id="hs-check" class="text-xs font-semibold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ CARD 5 : THEOREM 2 + GRAPH H -->
+        <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <p class="font-semibold text-sm text-zinc-800">Theorem 2 — Even Number of Odd-Degree Vertices</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">จำนวนจุดที่มี degree คี่ ต้องเป็นเลขคู่เสมอ</p>
+                </div>
+                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600">Theorem 2</span>
+            </div>
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm text-zinc-700 leading-7 mb-4">
+                        ใน Undirected Graph ใดก็ตาม จำนวนจุดยอดที่มี <strong class="text-rose-600">degree คี่</strong>
+                        จะต้องเป็น <strong class="text-rose-600">จำนวนคู่</strong> เสมอ
+                    </p>
+                    <div class="bg-slate-50 border-l-[3px] border-blue-500 rounded-r-xl px-4 py-3.5 text-[13.5px] text-zinc-600 leading-7 mb-4">
+                        <strong class="text-blue-700">Proof:</strong><br>
+                        แบ่งจุดยอดเป็นสองกลุ่ม:<br>
+                        &nbsp;• <strong>V₁</strong> = จุดที่ deg เป็นเลข<strong>คู่</strong><br>
+                        &nbsp;• <strong>V₂</strong> = จุดที่ deg เป็นเลข<strong>คี่</strong><br><br>
+                        จาก Handshaking Theorem: &nbsp;<span class="font-mono text-blue-700">2m = Σ<sub>V₁</sub> deg + Σ<sub>V₂</sub> deg</span><br><br>
+                        ฝั่งซ้าย (2m) เป็นเลขคู่, Σ<sub>V₁</sub> deg เป็นเลขคู่<br>
+                        ดังนั้น Σ<sub>V₂</sub> deg ต้องเป็น<strong>เลขคู่</strong> ด้วย<br>
+                        ผลรวมของเลขคี่จะเป็นเลขคู่ก็ต่อเมื่อจำนวนพจน์เป็น<strong>เลขคู่</strong> ∎
+                    </div>
+                    <div class="bg-rose-50 border border-rose-100 rounded-xl p-4">
+                        <p class="text-xs font-semibold text-rose-600 uppercase tracking-wide mb-3">ตรวจสอบด้วย Graph H</p>
+                        <div id="th2-check" class="space-y-1 text-sm font-mono text-zinc-700"></div>
+                        <div class="mt-3 pt-3 border-t border-rose-100 text-xs text-rose-700 font-semibold" id="th2-verdict"></div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">Graph H</p>
+                    <div class="bg-slate-50 rounded-xl flex items-center justify-center relative p-5 mb-4 min-h-[220px]">
+                        <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Graph H</span>
+                        <svg viewBox="0 0 280 210" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                            <ellipse cx="140" cy="22" rx="16" ry="11" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                            <line x1="50" y1="60" x2="140" y2="40" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="50" y1="60" x2="230" y2="60" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="50" y1="60" x2="140" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="140" y1="40" x2="230" y2="60" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="140" y1="40" x2="50" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="140" y1="40" x2="140" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="230" y1="60" x2="140" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <line x1="50" y1="150" x2="140" y2="150" stroke="#c5cfe8" stroke-width="1.8"/>
+                            <circle cx="50" cy="60" r="6" fill="#2d3a6b"/>
+                            <circle cx="140" cy="40" r="6" fill="#f43f5e"/>
+                            <circle cx="230" cy="60" r="6" fill="#2d3a6b"/>
+                            <circle cx="50" cy="150" r="6" fill="#2d3a6b"/>
+                            <circle cx="140" cy="150" r="6" fill="#2d3a6b"/>
+                            <text x="35" y="58" font-size="13" font-weight="700" fill="#2d3a6b">a</text>
+                            <text x="140" y="28" font-size="13" font-weight="700" fill="#f43f5e" text-anchor="middle">b</text>
+                            <text x="243" y="60" font-size="13" font-weight="700" fill="#2d3a6b">c</text>
+                            <text x="35" y="165" font-size="13" font-weight="700" fill="#2d3a6b">d</text>
+                            <text x="140" y="168" font-size="13" font-weight="700" fill="#2d3a6b" text-anchor="middle">e</text>
+                            <text x="50" y="78" font-size="11" fill="#2563eb" text-anchor="middle">deg=4</text>
+                            <text x="148" y="58" font-size="11" fill="#f43f5e" text-anchor="middle">deg=6*</text>
+                            <text x="230" y="78" font-size="11" fill="#2563eb" text-anchor="middle">deg=1</text>
+                            <text x="50" y="168" font-size="11" fill="#2563eb" text-anchor="middle">deg=5</text>
+                            <text x="140" y="186" font-size="11" fill="#2563eb" text-anchor="middle">deg=6</text>
+                            <text x="140" y="200" font-size="10" fill="#f43f5e" text-anchor="middle">* loop นับ +2</text>
+                        </svg>
+                    </div>
+                    <table class="w-full border border-slate-200 rounded-xl overflow-hidden text-left text-sm">
+                        <thead><tr class="bg-slate-50">
+                            <th class="px-3 py-2 text-xs font-semibold text-zinc-500">Vertex</th>
+                            <th class="px-3 py-2 text-xs font-semibold text-zinc-500">deg(v)</th>
+                            <th class="px-3 py-2 text-xs font-semibold text-zinc-500">N(v)</th>
+                            <th class="px-3 py-2 text-xs font-semibold text-zinc-500">คี่/คู่</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50"><td class="px-3 py-1.5 font-semibold text-blue-700">a</td><td class="px-3 py-1.5">4</td><td class="px-3 py-1.5 font-mono text-xs">{b,d,e}</td><td class="px-3 py-1.5 text-green-600 font-semibold">คู่</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-3 py-1.5 font-semibold text-rose-600">b</td><td class="px-3 py-1.5">6</td><td class="px-3 py-1.5 font-mono text-xs">{a,b,c,d,e}</td><td class="px-3 py-1.5 text-green-600 font-semibold">คู่</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-3 py-1.5 font-semibold text-blue-700">c</td><td class="px-3 py-1.5">1</td><td class="px-3 py-1.5 font-mono text-xs">{b}</td><td class="px-3 py-1.5 text-rose-600 font-semibold">คี่ ★</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-3 py-1.5 font-semibold text-blue-700">d</td><td class="px-3 py-1.5">5</td><td class="px-3 py-1.5 font-mono text-xs">{a,b,e}</td><td class="px-3 py-1.5 text-rose-600 font-semibold">คี่ ★</td></tr>
+                            <tr class="hover:bg-slate-50"><td class="px-3 py-1.5 font-semibold text-blue-700">e</td><td class="px-3 py-1.5">6</td><td class="px-3 py-1.5 font-mono text-xs">{a,b,d}</td><td class="px-3 py-1.5 text-green-600 font-semibold">คู่</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ CARD 7 : SPECIAL GRAPHS -->
+        <!-- <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <p class="font-semibold text-sm text-zinc-800">กราฟพิเศษที่ควรรู้จัก</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">Complete · Cycles · Wheels · Bipartite</p>
+                </div>
+                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-violet-50 text-violet-600">Special Graphs</span>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-wrap gap-1.5 mb-5 pb-4 border-b border-slate-100">
+                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap active bg-blue-600 text-white border-blue-600 font-semibold" data-target="sg-complete">Complete Kₙ</button>
+                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap" data-target="sg-cycle">Cycles Cₙ</button>
+                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap" data-target="sg-wheel">Wheels Wₙ</button>
+                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap" data-target="sg-bipartite">Bipartite</button>
+                </div>
+                <div class="term-panel active" id="tp-sg-complete">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-violet-50 text-violet-600">Kₙ — Complete Graph</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3"><strong class="text-violet-600">Complete Graph Kₙ</strong> คือ Simple Graph ที่จุดยอดทุกคู่มีเส้นเชื่อมถึงกันพอดีหนึ่งเส้น</p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">Kₙ มี <strong>n</strong> จุดยอด</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้น = <span class="font-mono text-violet-700">n(n-1)/2</span></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ทุกจุดมี degree = <span class="font-mono text-violet-700">n−1</span></li>
+                            </ul>
+                            <div class="bg-violet-50 border border-violet-100 rounded-xl p-3 font-mono text-xs text-violet-800 space-y-1">
+                                <div>K₁: 0 edges &nbsp; K₂: 1 edge</div>
+                                <div>K₃: 3 edges &nbsp; K₄: 6 edges &nbsp; K₅: 10 edges</div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">K₅</span>
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[180px]">
+                                <line x1="100" y1="20" x2="181" y2="79" stroke="#c5cfe8" stroke-width="1.5"/><line x1="100" y1="20" x2="162" y2="165" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="100" y1="20" x2="38" y2="165" stroke="#c5cfe8" stroke-width="1.5"/><line x1="100" y1="20" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="181" y1="79" x2="162" y2="165" stroke="#c5cfe8" stroke-width="1.5"/><line x1="181" y1="79" x2="38" y2="165" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="181" y1="79" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/><line x1="162" y1="165" x2="38" y2="165" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="162" y1="165" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/><line x1="38" y1="165" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <circle cx="100" cy="20" r="5" fill="#7c3aed"/><circle cx="181" cy="79" r="5" fill="#7c3aed"/>
+                                <circle cx="162" cy="165" r="5" fill="#7c3aed"/><circle cx="38" cy="165" r="5" fill="#7c3aed"/><circle cx="19" cy="79" r="5" fill="#7c3aed"/>
+                                <text x="100" y="10" font-size="11" fill="#7c3aed" text-anchor="middle">1</text><text x="192" y="79" font-size="11" fill="#7c3aed">2</text>
+                                <text x="166" y="180" font-size="11" fill="#7c3aed">3</text><text x="18" y="180" font-size="11" fill="#7c3aed">4</text><text x="4" y="79" font-size="11" fill="#7c3aed">5</text>
+                                <text x="100" y="196" font-size="12" fill="#7c3aed" text-anchor="middle" font-weight="600">K₅ — 10 edges, deg=4</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="term-panel" id="tp-sg-cycle">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-amber-50 text-amber-600">Cₙ — Cycle Graph</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3"><strong class="text-amber-600">Cycle Graph Cₙ</strong> คือ กราฟที่จุดยอด n จุด เชื่อมกันเป็นวงกลม</p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">n ≥ 3 เสมอ (C₁, C₂ ไม่นับเป็น simple graph)</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้น = <span class="font-mono text-amber-700">n</span></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ทุกจุดมี degree = <span class="font-mono text-amber-700">2</span></li>
+                            </ul>
+                            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 font-mono text-xs text-amber-800">C₃ = Triangle &nbsp; C₄ = Square &nbsp; C₅ = Pentagon</div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">C₅</span>
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[180px]">
+                                <line x1="100" y1="20" x2="181" y2="79" stroke="#f59e0b" stroke-width="2"/><line x1="181" y1="79" x2="162" y2="165" stroke="#f59e0b" stroke-width="2"/>
+                                <line x1="162" y1="165" x2="38" y2="165" stroke="#f59e0b" stroke-width="2"/><line x1="38" y1="165" x2="19" y2="79" stroke="#f59e0b" stroke-width="2"/>
+                                <line x1="19" y1="79" x2="100" y2="20" stroke="#f59e0b" stroke-width="2"/>
+                                <circle cx="100" cy="20" r="5" fill="#d97706"/><circle cx="181" cy="79" r="5" fill="#d97706"/>
+                                <circle cx="162" cy="165" r="5" fill="#d97706"/><circle cx="38" cy="165" r="5" fill="#d97706"/><circle cx="19" cy="79" r="5" fill="#d97706"/>
+                                <text x="100" y="10" font-size="11" fill="#d97706" text-anchor="middle">1</text><text x="192" y="79" font-size="11" fill="#d97706">2</text>
+                                <text x="166" y="180" font-size="11" fill="#d97706">3</text><text x="18" y="180" font-size="11" fill="#d97706">4</text><text x="4" y="79" font-size="11" fill="#d97706">5</text>
+                                <text x="100" y="196" font-size="12" fill="#d97706" text-anchor="middle" font-weight="600">C₅ — 5 edges, deg=2</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="term-panel" id="tp-sg-wheel">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600">Wₙ — Wheel Graph</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3"><strong class="text-rose-600">Wheel Graph Wₙ</strong> คือ Cycle Cₙ ที่เพิ่ม "จุดศูนย์กลาง" (hub) เชื่อมกับทุกจุดบน rim</p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จุดรวม = <span class="font-mono text-rose-700">n+1</span> จุด (rim n + hub 1)</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้น = <span class="font-mono text-rose-700">2n</span></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">deg(hub) = <span class="font-mono text-rose-700">n</span> &nbsp; deg(rim) = <span class="font-mono text-rose-700">3</span></li>
+                            </ul>
+                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3 font-mono text-xs text-rose-800">W₃ = 4 nodes, 6 edges &nbsp; W₅ = 6 nodes, 10 edges</div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">W₅</span>
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[180px]">
+                                <line x1="100" y1="100" x2="100" y2="20" stroke="#fca5a5" stroke-width="1.5"/>
+                                <line x1="100" y1="100" x2="181" y2="79" stroke="#fca5a5" stroke-width="1.5"/>
+                                <line x1="100" y1="100" x2="162" y2="165" stroke="#fca5a5" stroke-width="1.5"/>
+                                <line x1="100" y1="100" x2="38" y2="165" stroke="#fca5a5" stroke-width="1.5"/>
+                                <line x1="100" y1="100" x2="19" y2="79" stroke="#fca5a5" stroke-width="1.5"/>
+                                <line x1="100" y1="20" x2="181" y2="79" stroke="#f43f5e" stroke-width="2"/>
+                                <line x1="181" y1="79" x2="162" y2="165" stroke="#f43f5e" stroke-width="2"/>
+                                <line x1="162" y1="165" x2="38" y2="165" stroke="#f43f5e" stroke-width="2"/>
+                                <line x1="38" y1="165" x2="19" y2="79" stroke="#f43f5e" stroke-width="2"/>
+                                <line x1="19" y1="79" x2="100" y2="20" stroke="#f43f5e" stroke-width="2"/>
+                                <circle cx="100" cy="20" r="5" fill="#be123c"/>
+                                <circle cx="181" cy="79" r="5" fill="#be123c"/>
+                                <circle cx="162" cy="165" r="5" fill="#be123c"/>
+                                <circle cx="38" cy="165" r="5" fill="#be123c"/>
+                                <circle cx="19" cy="79" r="5" fill="#be123c"/>
+                                <circle cx="100" cy="100" r="8" fill="#f43f5e" stroke="#fff" stroke-width="2"/>
+                                <text x="100" y="103" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">h</text>
+                                <text x="100" y="196" font-size="12" fill="#be123c" text-anchor="middle" font-weight="600">W₅ — 10 edges, hub deg=5</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="term-panel" id="tp-sg-bipartite">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-green-50 text-green-600">Bipartite Graph</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">
+                                <strong class="text-green-700">Bipartite Graph</strong> คือกราฟที่แบ่งจุดยอดได้เป็น 2 กลุ่ม V₁ และ V₂
+                                โดยเส้นเชื่อมทุกเส้นเชื่อมระหว่าง V₁↔V₂ เท่านั้น ไม่มีเส้นภายในกลุ่มเดียวกัน
+                            </p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2"><strong>Complete Bipartite Kₘ,ₙ</strong> คือ bipartite ที่ทุกจุดใน V₁ เชื่อมกับทุกจุดใน V₂</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้นของ Kₘ,ₙ = <span class="font-mono text-green-700">m × n</span></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ใช้จำลอง matching, scheduling, resource assignment</li>
+                            </ul>
+                            <div class="bg-green-50 border border-green-100 rounded-xl p-3 font-mono text-xs text-green-800">K₂,₃ → 2×3 = 6 edges &nbsp; K₃,₃ → 3×3 = 9 edges</div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">K₂,₃</span>
+                            <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[200px]">
+                                <line x1="60" y1="60" x2="140" y2="40" stroke="#86efac" stroke-width="1.5"/>
+                                <line x1="60" y1="60" x2="140" y2="90" stroke="#86efac" stroke-width="1.5"/>
+                                <line x1="60" y1="60" x2="140" y2="140" stroke="#86efac" stroke-width="1.5"/>
+                                <line x1="60" y1="120" x2="140" y2="40" stroke="#86efac" stroke-width="1.5"/>
+                                <line x1="60" y1="120" x2="140" y2="90" stroke="#86efac" stroke-width="1.5"/>
+                                <line x1="60" y1="120" x2="140" y2="140" stroke="#86efac" stroke-width="1.5"/>
+                                <circle cx="60" cy="60" r="6" fill="#16a34a"/>
+                                <circle cx="60" cy="120" r="6" fill="#16a34a"/>
+                                <text x="44" y="60" font-size="12" font-weight="700" fill="#16a34a" dominant-baseline="middle">u₁</text>
+                                <text x="44" y="120" font-size="12" font-weight="700" fill="#16a34a" dominant-baseline="middle">u₂</text>
+                                <circle cx="140" cy="40" r="6" fill="#15803d"/>
+                                <circle cx="140" cy="90" r="6" fill="#15803d"/>
+                                <circle cx="140" cy="140" r="6" fill="#15803d"/>
+                                <text x="150" y="40" font-size="12" font-weight="700" fill="#15803d" dominant-baseline="middle">v₁</text>
+                                <text x="150" y="90" font-size="12" font-weight="700" fill="#15803d" dominant-baseline="middle">v₂</text>
+                                <text x="150" y="140" font-size="12" font-weight="700" fill="#15803d" dominant-baseline="middle">v₃</text>
+                                <text x="60" y="170" font-size="10" fill="#16a34a" text-anchor="middle">V₁</text>
+                                <text x="140" y="170" font-size="10" fill="#15803d" text-anchor="middle">V₂</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- CARD 8 : QUICK REFERENCE -->
+        <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-10">
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50">
+                <p class="font-semibold text-sm text-zinc-800">สรุปสั้น — สูตรที่ต้องจำ</p>
+            </div>
+            <div class="p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div class="rounded-xl border border-blue-100 bg-blue-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-blue-500 uppercase tracking-wide mb-2">Adjacent</p>
+                    <p class="text-sm text-blue-800">มีเส้นเชื่อม e ระหว่าง u, v<br>→ u adj v, v adj u</p>
+                </div>
+                <div class="rounded-xl border border-violet-100 bg-violet-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-violet-500 uppercase tracking-wide mb-2">Neighborhood</p>
+                    <p class="text-sm text-violet-800 font-mono">N(v) = {w | w adj v}</p>
+                </div>
+                <div class="rounded-xl border border-rose-100 bg-rose-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-rose-500 uppercase tracking-wide mb-2">Handshaking</p>
+                    <p class="text-sm text-rose-800 font-mono">2m = Σ deg(v)</p>
+                    <p class="text-xs text-rose-500 mt-1">loop นับ +2</p>
+                </div>
+                <div class="rounded-xl border border-amber-100 bg-amber-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-amber-500 uppercase tracking-wide mb-2">Odd-degree</p>
+                    <p class="text-sm text-amber-800">จำนวนจุด deg คี่<br>ต้องเป็น<strong>เลขคู่</strong>เสมอ</p>
+                </div>
+                <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-emerald-500 uppercase tracking-wide mb-2">In/Out-degree</p>
+                    <p class="text-sm text-emerald-800 font-mono">Σ deg⁺ = Σ deg⁻ = m</p>
+                </div>
+                <div class="rounded-xl border border-violet-100 bg-violet-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-violet-500 uppercase tracking-wide mb-2">Complete Kₙ</p>
+                    <p class="text-sm text-violet-800 font-mono">edges = n(n−1)/2<br>deg = n−1</p>
+                </div>
+                <div class="rounded-xl border border-amber-100 bg-amber-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-amber-500 uppercase tracking-wide mb-2">Cycle Cₙ</p>
+                    <p class="text-sm text-amber-800 font-mono">edges = n<br>deg = 2</p>
+                </div>
+                <div class="rounded-xl border border-green-100 bg-green-50 p-4 text-center">
+                    <p class="text-xs font-semibold text-green-500 uppercase tracking-wide mb-2">Bipartite Kₘ,ₙ</p>
+                    <p class="text-sm text-green-800 font-mono">edges = m × n</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    // Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const prevIcon = document.getElementById('prevIcon');
+    const nextIcon = document.getElementById('nextIcon');
+    let collapsed = false;
+    toggleBtn.addEventListener('click', () => {
+        collapsed = !collapsed;
+        sidebar.classList.toggle('collapsed', collapsed);
+        prevIcon.classList.toggle('hidden', collapsed);
+        nextIcon.classList.toggle('hidden', !collapsed);
+    });
+
+    // Tab switching
+    document.querySelectorAll('.term-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const card = tab.closest('div.border');
+            card.querySelectorAll('.term-tab').forEach(t => {
+                t.classList.remove('bg-blue-600','text-white','border-blue-600','font-semibold');
+                t.classList.add('bg-slate-50','text-slate-400','border-slate-200');
+            });
+            tab.classList.add('bg-blue-600','text-white','border-blue-600','font-semibold');
+            tab.classList.remove('bg-slate-50','text-slate-400','border-slate-200');
+            card.querySelectorAll('.term-panel').forEach(p => p.classList.remove('active'));
+            const panel = document.getElementById('tp-' + tab.dataset.target);
+            if (panel) panel.classList.add('active');
+        });
+    });
+
+    // Handshaking Interactive
+    const nodePos = { A:[50,80], B:[130,30], C:[210,80], D:[130,130] };
+    let edges = [], deg = { A:0, B:0, C:0, D:0 };
+    function addEdge(u, v) {
+        const key = [u,v].sort().join('-');
+        if (edges.find(e => e.key === key)) return;
+        edges.push({ u, v, key }); deg[u]++; deg[v]++;
+        renderHS();
+    }
+    function renderHS() {
+        const g = document.getElementById('hs-edges');
+        g.innerHTML = '';
+        edges.forEach(e => {
+            const [x1,y1] = nodePos[e.u], [x2,y2] = nodePos[e.v];
+            const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+            line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+            line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+            line.setAttribute('stroke','#2563eb'); line.setAttribute('stroke-width','2');
+            g.appendChild(line);
+        });
+        ['A','B','C','D'].forEach(v => {
+            const el = document.getElementById('d'+v);
+            if (el) { el.textContent = deg[v]; el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),300); }
+        });
+        const m = edges.length, sum = Object.values(deg).reduce((a,b)=>a+b,0);
+        document.getElementById('mCount').textContent = m;
+        document.getElementById('sumDeg').textContent = sum;
+        const ck = document.getElementById('hs-check');
+        ck.textContent = sum === 2*m ? "✓ 2m = " + (2*m) : "2m = " + (2*m) + " ≠ " + sum;
+        ck.style.color = sum === 2*m ? '#16a34a' : '#dc2626';
+    }
+    function resetHS() { edges = []; deg = { A:0, B:0, C:0, D:0 }; renderHS(); }
+    renderHS();
+
+    // Theorem 2 checker
+    const hDeg = { a:4, b:6, c:1, d:5, e:6 };
+    const th2el = document.getElementById('th2-check');
+    const th2vd = document.getElementById('th2-verdict');
+    if (th2el && th2vd) {
+        let html = '', oddCount = 0;
+        for (const [v, d] of Object.entries(hDeg)) {
+            const isOdd = d % 2 !== 0;
+            if (isOdd) oddCount++;
+            html += '<div style="color:' + (isOdd ? '#e11d48' : '#16a34a') + '">deg(' + v + ') = ' + d + ' → ' + (isOdd ? '<strong>คี่ ★</strong>' : 'คู่') + '</div>';
+        }
+        th2el.innerHTML = html;
+        th2vd.innerHTML = 'จุด degree คี่ทั้งหมด = <strong>' + oddCount + ' จุด</strong> (เลขคู่) ✓ Theorem 2 ใช้ได้';
+    }
+
+    function toggleExample() {
+        const panel = document.getElementById('example-panel');
+        const btn = document.getElementById('example-btn');
+        const isOn = btn.classList.toggle('on');
+        panel.style.display = isOn ? 'block' : 'none';
+        btn.innerHTML = isOn
+            ? '<i class="bi bi-eye-slash text-[13px]"></i> ซ่อน'
+            : '<i class="bi bi-journal-text text-[13px]"></i> ตัวอย่าง';
+        btn.classList.toggle('bg-blue-100', isOn);
+        btn.classList.toggle('text-blue-700', isOn);
+        btn.classList.toggle('border-blue-200', isOn);
+        btn.classList.toggle('bg-slate-50', !isOn);
+        btn.classList.toggle('text-slate-500', !isOn);
+        btn.classList.toggle('border-slate-200', !isOn);
+        }
+
+    (function () {
+        const NODES = [
+            { id: 'a', x: 40,  y: 90  },
+            { id: 'b', x: 110, y: 35  },
+            { id: 'c', x: 180, y: 90  },
+            { id: 'e', x: 110, y: 145 },
+            { id: 'f', x: 55,  y: 148 },
+            { id: 'g', x: 196, y: 162 },
+        ];
+        const EDGES = [
+            ['a','b'], ['b','c'], ['a','f'], ['f','e'], ['b','e'], ['b','f'], ['c','e']
+        ];
+    
+        const ADJ = {};
+        NODES.forEach(n => ADJ[n.id] = []);
+        EDGES.forEach(([u, v]) => { ADJ[u].push(v); ADJ[v].push(u); });
+    
+        let selected = null;
+    
+        const COLOR_EDGE_DEFAULT  = '#c5cfe8';
+        const COLOR_EDGE_ACTIVE   = '#2563eb';
+        const COLOR_EDGE_DIM      = '#d1d5db';
+        const COLOR_NODE_DEFAULT  = '#2563eb';
+        const COLOR_NODE_ACTIVE   = '#2563eb';
+        const COLOR_NODE_DIM      = '#d1d5db';
+        const COLOR_NODE_SEL      = '#1d4ed8';
+        const COLOR_LABEL_DEFAULT = '#2563eb';
+        const COLOR_LABEL_DIM     = '#9ca3af';
+        const COLOR_LABEL_SEL     = '#1d4ed8';
+    
+        function getNode(id) { return NODES.find(n => n.id === id); }
+    
+        function renderGraph() {
+            const edgesG = document.getElementById('nb-edges');
+            const nodesG = document.getElementById('nb-nodes');
+            edgesG.innerHTML = '';
+            nodesG.innerHTML = '';
+    
+            const svg = 'http://www.w3.org/2000/svg';
+            const neighborSet = selected ? new Set(ADJ[selected]) : null;
+    
+            EDGES.forEach(([u, v]) => {
+                const nu = getNode(u), nv = getNode(v);
+                const isActive = selected && (u === selected || v === selected);
+                const line = document.createElementNS(svg, 'line');
+                line.setAttribute('x1', nu.x); line.setAttribute('y1', nu.y);
+                line.setAttribute('x2', nv.x); line.setAttribute('y2', nv.y);
+                line.setAttribute('stroke', selected
+                    ? (isActive ? COLOR_EDGE_ACTIVE : COLOR_EDGE_DIM)
+                    : COLOR_EDGE_DEFAULT);
+                line.setAttribute('stroke-width', isActive ? '2.4' : '1.8');
+                line.setAttribute('stroke-linecap', 'round');
+                edgesG.appendChild(line);
+            });
+    
+            NODES.forEach(n => {
+                const isSel   = selected === n.id;
+                const isNeigh = selected && neighborSet.has(n.id);
+                const isDim   = selected && !isSel && !isNeigh;
+    
+                const g = document.createElementNS(svg, 'g');
+                g.style.cursor = 'pointer';
+                g.addEventListener('click', () => nbSelect(n.id));
+    
+                const circle = document.createElementNS(svg, 'circle');
+                circle.setAttribute('cx', n.x);
+                circle.setAttribute('cy', n.y);
+                circle.setAttribute('r', isSel ? 10 : (isNeigh ? 8 : 7));
+                circle.setAttribute('fill', isSel
+                    ? COLOR_NODE_SEL
+                    : (isDim ? COLOR_NODE_DIM : COLOR_NODE_ACTIVE));
+                circle.setAttribute('stroke', '#fff');
+                circle.setAttribute('stroke-width', isSel ? '2.5' : '2');
+    
+                const text = document.createElementNS(svg, 'text');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', '13');
+                text.setAttribute('font-weight', isSel ? '800' : '600');
+    
+                // label position
+                if (n.id === 'g') {
+                    text.setAttribute('x', n.x + 14);
+                    text.setAttribute('y', n.y + 1);
+                    text.setAttribute('fill', isDim ? COLOR_LABEL_DIM : '#9ca3af');
+                } else {
+                    const yOff = n.y > 100 ? 18 : -18;
+                    text.setAttribute('x', n.id === 'a' ? n.x - 2 : n.x);
+                    text.setAttribute('y', n.y + yOff);
+                    text.setAttribute('fill', isSel
+                        ? COLOR_LABEL_SEL
+                        : (isDim ? COLOR_LABEL_DIM : COLOR_LABEL_DEFAULT));
+                }
+    
+                text.textContent = n.id;
+                g.appendChild(circle);
+                g.appendChild(text);
+                nodesG.appendChild(g);
+            });
+        }
+    
+        function renderExample() {
+            const el  = document.getElementById('nb-example-content');
+            const btn = document.getElementById('nb-reset-btn');
+    
+            if (!selected) {
+                el.innerHTML = '<p class="text-xs text-zinc-400 italic">กดเลือก node บนกราฟเพื่อดู neighborhood</p>';
+                btn.disabled = true;
+                btn.className = 'mt-3 px-3 py-1 text-xs font-medium rounded-lg border border-zinc-200 text-zinc-400 bg-white cursor-not-allowed transition-all';
+                return;
+            }
+    
+            btn.disabled = false;
+            btn.className = 'mt-3 px-3 py-1 text-xs font-medium rounded-lg border border-blue-200 text-blue-600 bg-white hover:bg-blue-50 cursor-pointer transition-all';
+    
+            const neighbors = [...ADJ[selected]].sort();
+            const setStr = neighbors.length === 0 ? '∅' : '{' + neighbors.join(', ') + '}';
+    
+            el.innerHTML = `
+                <div class="mt-2 space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-mono font-bold text-blue-800">N(${selected})</span>
+                        <span class="text-xs text-zinc-400">=</span>
+                        <span class="text-sm font-mono text-blue-800">${setStr}</span>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-1">
+                        ${neighbors.length === 0
+                            ? `vertex <strong class="text-blue-600">${selected}</strong> ไม่มีเส้นเชื่อมใดเลย`
+                            : `vertex <strong class="text-blue-600">${selected}</strong> มี Neighborhood ${neighbors.length} จุด คือ ${neighbors.map(n => `<strong class="text-blue-600">${n}`).join(', ')}`
+                        }
+                    </p>
+                </div>
+            `;
+        }
+    
+        window.nbSelect = function (id) {
+            selected = (selected === id) ? null : id;
+            renderGraph();
+            renderExample();
+        };
+    
+        window.nbReset = function () {
+            selected = null;
+            renderGraph();
+            renderExample();
+        };
+    
+        renderGraph();
+    })();
+    </script>
+</body>
+</html>
