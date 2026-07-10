@@ -61,15 +61,15 @@
                 </svg>
                 <span class="nav-label">Undirected Graph</span>
             </a>
-            <a href="#" class="nav-item" title="Directed Graphs">
+            <a href="directed_graph.html" class="nav-item" title="Directed Graphs">
                 <i class="bi bi-table"></i>
                 <span class="nav-label">Directed Graph</span>
             </a>
-            <a href="#" class="nav-item" title="Bipartite Graphs">
+            <a href="bipartite_graph.html" class="nav-item" title="Bipartite Graphs">
                 <i class="bi bi-table"></i>
                 <span class="nav-label">Bipartite Graphs</span>
             </a>
-            <a href="#" class="nav-item" title="Representing Graphs">
+            <a href="representing_graphs.html" class="nav-item" title="Representing Graphs">
                 <i class="bi bi-braces"></i>
                 <span class="nav-label">Representing Graphs</span>
             </a>
@@ -296,15 +296,17 @@
 
         <!-- ============================================================ CARD 3 : HANDSHAKING THEOREM -->
         <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
-            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50">
-                <p class="font-semibold text-sm text-zinc-800">Theorem 1 — Handshaking Theorem</p>
-                <p class="text-xs text-zinc-400 mt-0.5">กดที่เส้นเชื่อมเพื่อดูว่า degree เพิ่มขึ้นอย่างไร</p>
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <p class="font-semibold text-sm text-zinc-800">Theorem 1 — Handshaking Theorem</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">กดที่เส้นเชื่อมเพื่อดูว่า degree เพิ่มขึ้นอย่างไร</p>
+                </div>
+                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600">Theorem 1</span>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                         <div class="mb-4">
-                            <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 mb-3">Theorem 1</span>
                             <p class="text-sm text-zinc-700 leading-7">ถ้า G = (V, E) เป็น Undirected Graph ที่มี <strong>m edges</strong> แล้ว</p>
                             <div class="my-4 flex justify-center">
                                 <div class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-xl px-5 py-2.5 text-xl font-semibold text-blue-700">
@@ -448,161 +450,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- ============================================================ CARD 7 : SPECIAL GRAPHS -->
-        <!-- <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
-            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                <div>
-                    <p class="font-semibold text-sm text-zinc-800">กราฟพิเศษที่ควรรู้จัก</p>
-                    <p class="text-xs text-zinc-400 mt-0.5">Complete · Cycles · Wheels · Bipartite</p>
-                </div>
-                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-violet-50 text-violet-600">Special Graphs</span>
-            </div>
-            <div class="p-6">
-                <div class="flex flex-wrap gap-1.5 mb-5 pb-4 border-b border-slate-100">
-                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap active bg-blue-600 text-white border-blue-600 font-semibold" data-target="sg-complete">Complete Kₙ</button>
-                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap" data-target="sg-cycle">Cycles Cₙ</button>
-                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap" data-target="sg-wheel">Wheels Wₙ</button>
-                    <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer whitespace-nowrap" data-target="sg-bipartite">Bipartite</button>
-                </div>
-                <div class="term-panel active" id="tp-sg-complete">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div>
-                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-violet-50 text-violet-600">Kₙ — Complete Graph</span></div>
-                            <p class="text-sm text-zinc-700 leading-7 mb-3"><strong class="text-violet-600">Complete Graph Kₙ</strong> คือ Simple Graph ที่จุดยอดทุกคู่มีเส้นเชื่อมถึงกันพอดีหนึ่งเส้น</p>
-                            <ul class="space-y-1 mb-4">
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">Kₙ มี <strong>n</strong> จุดยอด</li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้น = <span class="font-mono text-violet-700">n(n-1)/2</span></li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ทุกจุดมี degree = <span class="font-mono text-violet-700">n−1</span></li>
-                            </ul>
-                            <div class="bg-violet-50 border border-violet-100 rounded-xl p-3 font-mono text-xs text-violet-800 space-y-1">
-                                <div>K₁: 0 edges &nbsp; K₂: 1 edge</div>
-                                <div>K₃: 3 edges &nbsp; K₄: 6 edges &nbsp; K₅: 10 edges</div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
-                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">K₅</span>
-                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[180px]">
-                                <line x1="100" y1="20" x2="181" y2="79" stroke="#c5cfe8" stroke-width="1.5"/><line x1="100" y1="20" x2="162" y2="165" stroke="#c5cfe8" stroke-width="1.5"/>
-                                <line x1="100" y1="20" x2="38" y2="165" stroke="#c5cfe8" stroke-width="1.5"/><line x1="100" y1="20" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/>
-                                <line x1="181" y1="79" x2="162" y2="165" stroke="#c5cfe8" stroke-width="1.5"/><line x1="181" y1="79" x2="38" y2="165" stroke="#c5cfe8" stroke-width="1.5"/>
-                                <line x1="181" y1="79" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/><line x1="162" y1="165" x2="38" y2="165" stroke="#c5cfe8" stroke-width="1.5"/>
-                                <line x1="162" y1="165" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/><line x1="38" y1="165" x2="19" y2="79" stroke="#c5cfe8" stroke-width="1.5"/>
-                                <circle cx="100" cy="20" r="5" fill="#7c3aed"/><circle cx="181" cy="79" r="5" fill="#7c3aed"/>
-                                <circle cx="162" cy="165" r="5" fill="#7c3aed"/><circle cx="38" cy="165" r="5" fill="#7c3aed"/><circle cx="19" cy="79" r="5" fill="#7c3aed"/>
-                                <text x="100" y="10" font-size="11" fill="#7c3aed" text-anchor="middle">1</text><text x="192" y="79" font-size="11" fill="#7c3aed">2</text>
-                                <text x="166" y="180" font-size="11" fill="#7c3aed">3</text><text x="18" y="180" font-size="11" fill="#7c3aed">4</text><text x="4" y="79" font-size="11" fill="#7c3aed">5</text>
-                                <text x="100" y="196" font-size="12" fill="#7c3aed" text-anchor="middle" font-weight="600">K₅ — 10 edges, deg=4</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="term-panel" id="tp-sg-cycle">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div>
-                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-amber-50 text-amber-600">Cₙ — Cycle Graph</span></div>
-                            <p class="text-sm text-zinc-700 leading-7 mb-3"><strong class="text-amber-600">Cycle Graph Cₙ</strong> คือ กราฟที่จุดยอด n จุด เชื่อมกันเป็นวงกลม</p>
-                            <ul class="space-y-1 mb-4">
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">n ≥ 3 เสมอ (C₁, C₂ ไม่นับเป็น simple graph)</li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้น = <span class="font-mono text-amber-700">n</span></li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ทุกจุดมี degree = <span class="font-mono text-amber-700">2</span></li>
-                            </ul>
-                            <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 font-mono text-xs text-amber-800">C₃ = Triangle &nbsp; C₄ = Square &nbsp; C₅ = Pentagon</div>
-                        </div>
-                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
-                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">C₅</span>
-                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[180px]">
-                                <line x1="100" y1="20" x2="181" y2="79" stroke="#f59e0b" stroke-width="2"/><line x1="181" y1="79" x2="162" y2="165" stroke="#f59e0b" stroke-width="2"/>
-                                <line x1="162" y1="165" x2="38" y2="165" stroke="#f59e0b" stroke-width="2"/><line x1="38" y1="165" x2="19" y2="79" stroke="#f59e0b" stroke-width="2"/>
-                                <line x1="19" y1="79" x2="100" y2="20" stroke="#f59e0b" stroke-width="2"/>
-                                <circle cx="100" cy="20" r="5" fill="#d97706"/><circle cx="181" cy="79" r="5" fill="#d97706"/>
-                                <circle cx="162" cy="165" r="5" fill="#d97706"/><circle cx="38" cy="165" r="5" fill="#d97706"/><circle cx="19" cy="79" r="5" fill="#d97706"/>
-                                <text x="100" y="10" font-size="11" fill="#d97706" text-anchor="middle">1</text><text x="192" y="79" font-size="11" fill="#d97706">2</text>
-                                <text x="166" y="180" font-size="11" fill="#d97706">3</text><text x="18" y="180" font-size="11" fill="#d97706">4</text><text x="4" y="79" font-size="11" fill="#d97706">5</text>
-                                <text x="100" y="196" font-size="12" fill="#d97706" text-anchor="middle" font-weight="600">C₅ — 5 edges, deg=2</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="term-panel" id="tp-sg-wheel">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div>
-                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600">Wₙ — Wheel Graph</span></div>
-                            <p class="text-sm text-zinc-700 leading-7 mb-3"><strong class="text-rose-600">Wheel Graph Wₙ</strong> คือ Cycle Cₙ ที่เพิ่ม "จุดศูนย์กลาง" (hub) เชื่อมกับทุกจุดบน rim</p>
-                            <ul class="space-y-1 mb-4">
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จุดรวม = <span class="font-mono text-rose-700">n+1</span> จุด (rim n + hub 1)</li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้น = <span class="font-mono text-rose-700">2n</span></li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">deg(hub) = <span class="font-mono text-rose-700">n</span> &nbsp; deg(rim) = <span class="font-mono text-rose-700">3</span></li>
-                            </ul>
-                            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3 font-mono text-xs text-rose-800">W₃ = 4 nodes, 6 edges &nbsp; W₅ = 6 nodes, 10 edges</div>
-                        </div>
-                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
-                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">W₅</span>
-                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[180px]">
-                                <line x1="100" y1="100" x2="100" y2="20" stroke="#fca5a5" stroke-width="1.5"/>
-                                <line x1="100" y1="100" x2="181" y2="79" stroke="#fca5a5" stroke-width="1.5"/>
-                                <line x1="100" y1="100" x2="162" y2="165" stroke="#fca5a5" stroke-width="1.5"/>
-                                <line x1="100" y1="100" x2="38" y2="165" stroke="#fca5a5" stroke-width="1.5"/>
-                                <line x1="100" y1="100" x2="19" y2="79" stroke="#fca5a5" stroke-width="1.5"/>
-                                <line x1="100" y1="20" x2="181" y2="79" stroke="#f43f5e" stroke-width="2"/>
-                                <line x1="181" y1="79" x2="162" y2="165" stroke="#f43f5e" stroke-width="2"/>
-                                <line x1="162" y1="165" x2="38" y2="165" stroke="#f43f5e" stroke-width="2"/>
-                                <line x1="38" y1="165" x2="19" y2="79" stroke="#f43f5e" stroke-width="2"/>
-                                <line x1="19" y1="79" x2="100" y2="20" stroke="#f43f5e" stroke-width="2"/>
-                                <circle cx="100" cy="20" r="5" fill="#be123c"/>
-                                <circle cx="181" cy="79" r="5" fill="#be123c"/>
-                                <circle cx="162" cy="165" r="5" fill="#be123c"/>
-                                <circle cx="38" cy="165" r="5" fill="#be123c"/>
-                                <circle cx="19" cy="79" r="5" fill="#be123c"/>
-                                <circle cx="100" cy="100" r="8" fill="#f43f5e" stroke="#fff" stroke-width="2"/>
-                                <text x="100" y="103" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">h</text>
-                                <text x="100" y="196" font-size="12" fill="#be123c" text-anchor="middle" font-weight="600">W₅ — 10 edges, hub deg=5</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="term-panel" id="tp-sg-bipartite">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div>
-                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-green-50 text-green-600">Bipartite Graph</span></div>
-                            <p class="text-sm text-zinc-700 leading-7 mb-3">
-                                <strong class="text-green-700">Bipartite Graph</strong> คือกราฟที่แบ่งจุดยอดได้เป็น 2 กลุ่ม V₁ และ V₂
-                                โดยเส้นเชื่อมทุกเส้นเชื่อมระหว่าง V₁↔V₂ เท่านั้น ไม่มีเส้นภายในกลุ่มเดียวกัน
-                            </p>
-                            <ul class="space-y-1 mb-4">
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2"><strong>Complete Bipartite Kₘ,ₙ</strong> คือ bipartite ที่ทุกจุดใน V₁ เชื่อมกับทุกจุดใน V₂</li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">จำนวนเส้นของ Kₘ,ₙ = <span class="font-mono text-green-700">m × n</span></li>
-                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">ใช้จำลอง matching, scheduling, resource assignment</li>
-                            </ul>
-                            <div class="bg-green-50 border border-green-100 rounded-xl p-3 font-mono text-xs text-green-800">K₂,₃ → 2×3 = 6 edges &nbsp; K₃,₃ → 3×3 = 9 edges</div>
-                        </div>
-                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
-                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">K₂,₃</span>
-                            <svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[200px]">
-                                <line x1="60" y1="60" x2="140" y2="40" stroke="#86efac" stroke-width="1.5"/>
-                                <line x1="60" y1="60" x2="140" y2="90" stroke="#86efac" stroke-width="1.5"/>
-                                <line x1="60" y1="60" x2="140" y2="140" stroke="#86efac" stroke-width="1.5"/>
-                                <line x1="60" y1="120" x2="140" y2="40" stroke="#86efac" stroke-width="1.5"/>
-                                <line x1="60" y1="120" x2="140" y2="90" stroke="#86efac" stroke-width="1.5"/>
-                                <line x1="60" y1="120" x2="140" y2="140" stroke="#86efac" stroke-width="1.5"/>
-                                <circle cx="60" cy="60" r="6" fill="#16a34a"/>
-                                <circle cx="60" cy="120" r="6" fill="#16a34a"/>
-                                <text x="44" y="60" font-size="12" font-weight="700" fill="#16a34a" dominant-baseline="middle">u₁</text>
-                                <text x="44" y="120" font-size="12" font-weight="700" fill="#16a34a" dominant-baseline="middle">u₂</text>
-                                <circle cx="140" cy="40" r="6" fill="#15803d"/>
-                                <circle cx="140" cy="90" r="6" fill="#15803d"/>
-                                <circle cx="140" cy="140" r="6" fill="#15803d"/>
-                                <text x="150" y="40" font-size="12" font-weight="700" fill="#15803d" dominant-baseline="middle">v₁</text>
-                                <text x="150" y="90" font-size="12" font-weight="700" fill="#15803d" dominant-baseline="middle">v₂</text>
-                                <text x="150" y="140" font-size="12" font-weight="700" fill="#15803d" dominant-baseline="middle">v₃</text>
-                                <text x="60" y="170" font-size="10" fill="#16a34a" text-anchor="middle">V₁</text>
-                                <text x="140" y="170" font-size="10" fill="#15803d" text-anchor="middle">V₂</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
 
         <!-- CARD 8 : QUICK REFERENCE -->
         <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-10">

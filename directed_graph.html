@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directed Graph Terminology</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="help.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        /* bullet */
+        .step-li { position: relative; padding-left: 20px; }
+        .step-li::before {
+            content: ''; position: absolute; left: 0; top: 9px;
+            width: 6px; height: 6px; border-radius: 999px; background: #2563eb;
+        }
+        .step-li-red::before { background: #f43f5e; }
+
+        /* Tab */
+        .term-panel { display: none; }
+        .term-panel.active { display: block; }
+
+        /* Quiz */
+        .quiz-opt { transition: all .15s; }
+        .quiz-opt.correct { border-color: #22c55e !important; background: #f0fdf4 !important; color: #15803d !important; font-weight: 600; }
+        .quiz-opt.wrong   { border-color: #f43f5e !important; background: #fff1f2 !important; color: #be123c !important; }
+        .quiz-opt.disabled { cursor: not-allowed; opacity: .6; }
+        .feedback-box { display: none; }
+        .feedback-box.show { display: block; }
+
+        @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1)} }
+        .pop { animation: pop 0.3s ease; }
+
+        /* Arrow marker */
+        .arrow-active { stroke: #2563eb; }
+        .arrow-dim { stroke: #d1d5db; }
+    </style>
+</head>
+<body class="bg-gray-50 flex min-h-screen">
+
+    <aside id="sidebar" class="sidebar bg-white border-r border-zinc-100 flex flex-col py-4 px-3 gap-1 h-screen sticky top-0 overflow-hidden">
+        <div class="flex items-center justify-between mb-3 px-1">
+            <span class="sidebar-title font-bold text-xl text-zinc-800 tracking-tight">Graph</span>
+            <button class="flex justify-center items-center w-[28px] h-[28px] border border-zinc-300 rounded bg-white transition duration-150 cursor-pointer hover:bg-gray-200" id="toggleBtn" title="Toggle sidebar">
+                <i id="prevIcon" class="bi bi-chevron-double-left" style="color: gray;"></i>
+                <i id="nextIcon" class="bi bi-chevron-double-right hidden" style="color: gray;"></i>
+            </button>
+        </div>
+        <div class="divider"></div>
+        <nav class="flex flex-col gap-0.5 mt-1">
+            <p class="section-label">Chapters</p>
+            <a href="index.html" class="nav-item" title="Graph Models">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/>
+                    <line x1="8.5" y1="11" x2="15.5" y2="7.5"/><line x1="8.5" y1="13" x2="15.5" y2="16.5"/>
+                </svg>
+                <span class="nav-label">Graph Models</span>
+            </a>
+            <a href="undirected_graph.html" class="nav-item" title="Undirected Graph">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                </svg>
+                <span class="nav-label">Undirected Graph</span>
+            </a>
+            <a href="directed_graph.html" class="nav-item active" title="Directed Graphs">
+                <i class="bi bi-table"></i>
+                <span class="nav-label">Directed Graph</span>
+            </a>
+            <a href="bipartite_graph.html" class="nav-item" title="Bipartite Graphs">
+                <i class="bi bi-table"></i>
+                <span class="nav-label">Bipartite Graphs</span>
+            </a>
+            <a href="representing_graphs.html" class="nav-item" title="Representing Graphs">
+                <i class="bi bi-braces"></i>
+                <span class="nav-label">Representing Graphs</span>
+            </a>
+            <div class="divider mt-2"></div>
+            <p class="section-label mt-1">Quiz</p>
+            <a href="#" class="nav-item" title="Graphs Part1">
+                <i class="bi bi-1-circle"></i>
+                <span class="nav-label">Graphs Part1</span>
+            </a>
+            <a href="#" class="nav-item" title="Graphs Part2">
+                <i class="bi bi-2-circle"></i>
+                <span class="nav-label">Graphs Part2</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ========== MAIN ========== -->
+    <main class="flex-1 p-8 w-full">
+        <h1 class="text-2xl font-semibold text-zinc-800 mb-1">Directed Graph Terminology</h1>
+        <p class="text-zinc-400 text-sm mb-8">Adjacent · In-degree · Out-degree · Theorem 3 — บทที่ 3</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+
+            <!-- ===== CARD 1: DEFINITION 4 & 5 (tabbed) ===== -->
+            <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow md:col-span-2">
+                <div class="flex flex-wrap items-center justify-between border-b border-slate-100 px-5 py-4 gap-2">
+                    <div class="flex flex-wrap gap-1.5">
+                        <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-semibold border bg-blue-600 text-white border-blue-600 cursor-pointer" data-target="adjacent-dir">Adjacent &amp; Initial/Terminal</button>
+                        <button class="term-tab px-3.5 py-1.5 rounded-full text-[13px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:text-[#2d3a6b] hover:border-[#c5cfe8] hover:bg-[#f4f6fb] transition-all cursor-pointer" data-target="degree-dir">In-degree &amp; Out-degree</button>
+                    </div>
+                </div>
+
+                <!-- Panel: Adjacent Directed -->
+                <div class="term-panel active p-6" id="tp-adjacent-dir">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3 flex items-center gap-2">
+                                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Definition 4</span>
+                                <span class="text-xs text-zinc-400">Directed Graph</span>
+                            </div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-4">
+                                เมื่อ <strong>(u, v)</strong> เป็น edge ใน Directed Graph G,
+                                เราบอกว่า <strong class="text-blue-600">u เป็น adjacent ถึง v</strong>
+                                และ <strong class="text-blue-600">v เป็น adjacent จาก u</strong>
+                            </p>
+                            <ul class="space-y-1 mb-5">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">
+                                    <strong>u</strong> เรียกว่า <strong class="text-blue-600">Initial vertex</strong> ของ (u, v)
+                                </li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">
+                                    <strong>v</strong> เรียกว่า <strong class="text-blue-600">Terminal vertex</strong> หรือ <strong class="text-blue-600">End vertex</strong> ของ (u, v)
+                                </li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-2">
+                                    ถ้าเป็น <strong>Loop</strong> (วน edge กลับตัวเอง) — Initial vertex และ Terminal vertex จะเป็นจุดเดียวกัน
+                                </li>
+                            </ul>
+                            <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-2.5 text-sm text-blue-700">
+                                <i class="bi bi-arrow-right-circle-fill"></i>
+                                ลูกศรชี้จาก <strong class="mx-1">Initial</strong> ไปยัง <strong class="mx-1">Terminal</strong>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center relative min-h-[200px] p-5">
+                            <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Directed Edge (u → v)</span>
+                            <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[240px]">
+                                <defs>
+                                    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                                        <path d="M0,0 L0,6 L8,3 z" fill="#2563eb"/>
+                                    </marker>
+                                    <marker id="arrow-gray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                                        <path d="M0,0 L0,6 L8,3 z" fill="#c5cfe8"/>
+                                    </marker>
+                                </defs>
+                                <!-- dim edges -->
+                                <line x1="160" y1="50" x2="161" y2="126" stroke="#c5cfe8" stroke-width="1.8" marker-end="url(#arrow-gray)"/>
+                                <!-- highlighted edge u→v -->
+                                <line x1="57" y1="90" x2="148" y2="54" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrow-blue)"/>
+                                <text x="98" y="60" font-size="12" fill="#2563eb" font-weight="700" text-anchor="middle">e</text>
+
+                                <circle cx="50" cy="90" r="7" fill="#2563eb"/>
+                                <circle cx="160" cy="50" r="7" fill="#2563eb"/>
+                                <circle cx="160" cy="130" r="7" fill="#c5cfe8" stroke="#8b93a7" stroke-width="1.5"/>
+
+                                <text x="30" y="88" font-size="14" font-weight="700" fill="#2d3a6b">u</text>
+                                <text x="172" y="54" font-size="14" font-weight="700" fill="#2d3a6b">v</text>
+                                <text x="172" y="134" font-size="14" font-weight="500" fill="#8b93a7">w</text>
+
+                                <text x="36" y="112" font-size="10" fill="#2563eb" font-weight="600">initial</text>
+                                <text x="148" y="42" font-size="10" fill="#2563eb" font-weight="600">terminal</text>
+                                <text x="120" y="170" font-size="11" fill="#2563eb" text-anchor="middle">u adjacent to v, v adjacent from u</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel: In/Out-degree -->
+                <div class="term-panel p-6" id="tp-degree-dir">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <div>
+                            <div class="mb-3 flex items-center gap-2">
+                                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Definition 5</span>
+                                <span class="text-xs text-zinc-400">In/Out-degree</span>
+                            </div>
+                            <div class="mb-4 space-y-3">
+                                <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                                    <p class="text-sm font-semibold text-blue-700 mb-1">deg⁻(v) — In-degree</p>
+                                    <p class="text-sm text-zinc-600 leading-6">จำนวน edge ที่มี <strong>v เป็น Terminal vertex</strong><br>นับเส้นที่ "เข้า" มาหา v</p>
+                                </div>
+                                <div class="bg-rose-50 border border-rose-100 rounded-xl px-4 py-3">
+                                    <p class="text-sm font-semibold text-rose-600 mb-1">deg⁺(v) — Out-degree</p>
+                                    <p class="text-sm text-zinc-600 leading-6">จำนวน edge ที่มี <strong>v เป็น Initial vertex</strong><br>นับเส้นที่ "ออก" จาก v</p>
+                                </div>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-sm text-amber-800">
+                                <i class="bi bi-exclamation-triangle-fill mr-1"></i>
+                                <strong>Loop</strong> ที่จุดยอด v เพิ่ม deg⁻(v) และ deg⁺(v) อย่างละ 1
+                            </div>
+                        </div>
+                        <div>
+                            <!-- Interactive: click node to see deg -->
+                            <div class="bg-slate-50 rounded-xl p-4 relative min-h-[200px] flex flex-col items-center justify-center">
+                                <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">กดจุดยอดเพื่อดู degree</span>
+                                <svg id="deg-svg" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[220px] cursor-pointer">
+                                    <defs>
+                                        <marker id="deg-arh-blue" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#2563eb"/></marker>
+                                        <marker id="deg-arh-default" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#c5cfe8"/></marker>
+                                        <marker id="deg-arh-dim"  markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#d1d5db"/></marker>
+                                        <marker id="deg-arh-rose" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#f43f5e"/></marker>
+                                    </defs>
+                                    <g id="deg-edges"></g>
+                                    <g id="deg-nodes"></g>
+                                </svg>
+                            </div>
+                            <div id="deg-info" class="mt-3 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-zinc-500">
+                                กดที่จุดยอดบนกราฟ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CARD 2: WORKED EXAMPLE ===== -->
+            <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow md:col-span-2">
+                <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-sm text-zinc-800">ตัวอย่าง — หา In-degree และ Out-degree</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">Graph G มีจุดยอด a, b, c, d, e, f</p>
+                    </div>
+                    <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Worked Example</span>
+                </div>
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <!-- Graph drawing -->
+                    <div class="bg-slate-50 rounded-xl flex items-center justify-center relative p-5 min-h-[260px]">
+                        <span class="absolute top-3.5 left-4 text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Graph G</span>
+                        <svg viewBox="0 0 280 240" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                            <defs>
+                                <marker id="arw" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#2563eb"/></marker>
+                            </defs>
+                            <!-- edges (a,b) (a,c) (b,c) (c,d) (d,a) (d,e) (e,b) (e,d) loop-e (c,c) -->
+                            <line x1="57" y1="58" x2="117" y2="58" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <line x1="60" y1="65" x2="170" y2="105" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <line x1="128" y1="63" x2="175" y2="100" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <line x1="178" y1="118" x2="178" y2="168" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <line x1="180" y1="178" x2="60" y2="68" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <line x1="88" y1="172" x2="50" y2="75" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <path d="M174,175 Q137,160 101,175" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <path d="M101,178 Q137,193 174,178" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <!-- loop on c -->
+                            <path d="M180,106 A15,15 0 1 1 180,114" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arw)"/>
+                            <!-- isolated f -->
+                            <circle cx="248" cy="175" r="5" fill="#d1d5db" stroke="#9ca3af" stroke-width="1.5"/>
+
+                            <!-- nodes -->
+                            <circle cx="50" cy="60" r="6" fill="#2d3a6b"/>
+                            <circle cx="125" cy="60" r="6" fill="#2d3a6b"/>
+                            <circle cx="180" cy="110" r="6" fill="#2d3a6b"/>
+                            <circle cx="180" cy="175" r="6" fill="#2d3a6b"/>
+                            <circle cx="95" cy="175" r="6" fill="#2d3a6b"/>
+
+                            <!-- labels -->
+                            <text x="38" y="57" font-size="13" font-weight="700" fill="#2d3a6b">a</text>
+                            <text x="133" y="57" font-size="13" font-weight="700" fill="#2d3a6b">b</text>
+                            <text x="192" y="108" font-size="13" font-weight="700" fill="#2d3a6b">c</text>
+                            <text x="188" y="188" font-size="13" font-weight="700" fill="#2d3a6b">d</text>
+                            <text x="82" y="194" font-size="13" font-weight="700" fill="#2d3a6b">e</text>
+                            <text x="254" y="178" font-size="13" font-weight="500" fill="#9ca3af">f</text>
+                        </svg>
+                    </div>
+                    <!-- Table -->
+                    <div>
+                        <table class="w-full border border-slate-200 rounded-xl overflow-hidden text-left text-sm mb-4">
+                            <thead>
+                                <tr class="bg-slate-50">
+                                    <th class="px-4 py-2.5 text-xs font-semibold text-zinc-500">Vertex</th>
+                                    <th class="px-4 py-2.5 text-xs font-semibold text-blue-500">deg⁻ (in)</th>
+                                    <th class="px-4 py-2.5 text-xs font-semibold text-rose-500">deg⁺ (out)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-semibold text-blue-700">a</td>
+                                    <td class="px-4 py-2 text-blue-600 font-mono">2</td>
+                                    <td class="px-4 py-2 text-rose-500 font-mono">2</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-semibold text-blue-700">b</td>
+                                    <td class="px-4 py-2 text-blue-600 font-mono">2</td>
+                                    <td class="px-4 py-2 text-rose-500 font-mono">2</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-semibold text-blue-700">c</td>
+                                    <td class="px-4 py-2 text-blue-600 font-mono">3</td>
+                                    <td class="px-4 py-2 text-rose-500 font-mono">3</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-semibold text-blue-700">d</td>
+                                    <td class="px-4 py-2 text-blue-600 font-mono">2</td>
+                                    <td class="px-4 py-2 text-rose-500 font-mono">2</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-semibold text-blue-700">e</td>
+                                    <td class="px-4 py-2 text-blue-600 font-mono">3</td>
+                                    <td class="px-4 py-2 text-rose-500 font-mono">3</td>
+                                </tr>
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-4 py-2 font-semibold text-zinc-400">f</td>
+                                    <td class="px-4 py-2 text-zinc-400 font-mono">0</td>
+                                    <td class="px-4 py-2 text-zinc-400 font-mono">0</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-slate-50 border-t border-slate-200">
+                                    <td class="px-4 py-2 text-xs font-bold text-zinc-600">รวม</td>
+                                    <td class="px-4 py-2 text-xs font-bold text-blue-600">12</td>
+                                    <td class="px-4 py-2 text-xs font-bold text-rose-500">12</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="bg-slate-50 border-l-[3px] border-blue-500 rounded-r-xl px-4 py-3.5 text-[13.5px] text-zinc-600 leading-7">
+                            <span class="font-semibold text-blue-700">สังเกต:</span>
+                            Σ deg⁻ = Σ deg⁺ = <strong>12</strong> = จำนวน edges ทั้งหมด<br>
+                            (นับ loop ที่ c เป็น 1 in + 1 out)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /grid row 1 -->
+
+        <!-- ===== CARD 3: THEOREM 3 ===== -->
+        <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <p class="font-semibold text-sm text-zinc-800">Theorem 3 — Sum of In/Out-degrees</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">ผลรวม in-degree = ผลรวม out-degree = จำนวน edges</p>
+                </div>
+                <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-rose-50 text-rose-600">Theorem 3</span>
+            </div>
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm text-zinc-700 leading-7 mb-4">
+                        ให้ G = (V, E) เป็น Graph ที่มี directed edges แล้ว:
+                    </p>
+                    <div class="my-4 flex justify-center">
+                        <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 text-base font-semibold text-blue-700 font-mono">
+                            |E| &nbsp;=&nbsp; Σ deg⁻(v) &nbsp;=&nbsp; Σ deg⁺(v)
+                        </div>
+                    </div>
+                    <p class="text-sm text-zinc-500 leading-7 mb-4">กล่าวคือ ผลรวมของ in-degree ทุกจุดยอด เท่ากับผลรวม out-degree ทุกจุดยอด และเท่ากับจำนวน edge ทั้งหมดเสมอ</p>
+                    <div class="bg-slate-50 border-l-[3px] border-blue-500 rounded-r-xl px-4 py-3.5 text-[13.5px] text-zinc-600 leading-7 mb-4">
+                        <strong class="text-blue-700">Proof (ไอเดีย):</strong><br>
+                        เส้นเชื่อมแต่ละเส้นมี initial vertex 1 จุด (เพิ่ม out-degree 1 ครั้ง) และ terminal vertex 1 จุด (เพิ่ม in-degree 1 ครั้ง) ดังนั้น ผลรวมทั้งสองเท่ากับจำนวน edges เสมอ ∎
+                    </div>
+                </div>
+                <!-- Interactive demo -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <p class="text-xs font-semibold text-zinc-500">ลองเพิ่ม edge แล้วดูผลรวม</p>
+                        <button onclick="resetTh3()" class="border border-slate-200 rounded-md px-4 py-1 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 hover:text-blue-500 transition-all cursor-pointer">รีเซ็ต</button>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl flex items-center justify-center p-4 mb-4 min-h-[160px]">
+                        <svg id="th3-svg" viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[260px]">
+                            <defs>
+                                <marker id="arw3" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="#2563eb"/></marker>
+                            </defs>
+                            <circle cx="50" cy="80" r="7" fill="#2d3a6b"/>
+                            <circle cx="130" cy="30" r="7" fill="#2d3a6b"/>
+                            <circle cx="210" cy="80" r="7" fill="#2d3a6b"/>
+                            <circle cx="130" cy="130" r="7" fill="#2d3a6b"/>
+                            <text x="30" y="82" font-size="13" font-weight="700" fill="#2d3a6b">P</text>
+                            <text x="130" y="18" font-size="13" font-weight="700" fill="#2d3a6b" text-anchor="middle">Q</text>
+                            <text x="220" y="82" font-size="13" font-weight="700" fill="#2d3a6b">R</text>
+                            <text x="130" y="152" font-size="13" font-weight="700" fill="#2d3a6b" text-anchor="middle">S</text>
+                            <g id="th3-edges"></g>
+                        </svg>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button onclick="addDirEdge('P','Q')" class="border border-slate-200 rounded-xl px-3 py-2 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ P → Q</button>
+                        <button onclick="addDirEdge('Q','R')" class="border border-slate-200 rounded-xl px-3 py-2 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Q → R</button>
+                        <button onclick="addDirEdge('R','S')" class="border border-slate-200 rounded-xl px-3 py-2 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ R → S</button>
+                        <button onclick="addDirEdge('S','P')" class="border border-slate-200 rounded-xl px-3 py-2 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ S → P</button>
+                        <button onclick="addDirEdge('P','R')" class="border border-slate-200 rounded-xl px-3 py-2 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ P → R</button>
+                        <button onclick="addDirEdge('Q','S')" class="border border-slate-200 rounded-xl px-3 py-2 text-xs text-zinc-600 bg-white hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer">+ Q → S</button>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm">
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3 text-xs font-mono">
+                            <div>deg⁻(P)=<strong id="inP" class="text-blue-600">0</strong> deg⁺(P)=<strong id="outP" class="text-rose-500">0</strong></div>
+                            <div>deg⁻(Q)=<strong id="inQ" class="text-blue-600">0</strong> deg⁺(Q)=<strong id="outQ" class="text-rose-500">0</strong></div>
+                            <div>deg⁻(R)=<strong id="inR" class="text-blue-600">0</strong> deg⁺(R)=<strong id="outR" class="text-rose-500">0</strong></div>
+                            <div>deg⁻(S)=<strong id="inS" class="text-blue-600">0</strong> deg⁺(S)=<strong id="outS" class="text-rose-500">0</strong></div>
+                        </div>
+                        <div class="border-t border-slate-200 pt-3 flex items-center justify-between">
+                            <span class="text-xs text-zinc-500">|E| = <strong id="th3E">0</strong></span>
+                            <span class="text-xs text-blue-600">Σdeg⁻ = <strong id="th3In">0</strong></span>
+                            <span class="text-xs text-rose-500">Σdeg⁺ = <strong id="th3Out">0</strong></span>
+                            <span id="th3-check" class="text-xs font-semibold"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CARD 4: SPECIAL GRAPHS ===== -->
+        <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden mb-6 hover:shadow-md transition-shadow">
+            <div class="px-5 py-4 border-b border-slate-100 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <p class="font-semibold text-sm text-zinc-800">Special Types of Simple Graphs</p>
+                    <p class="text-xs text-zinc-400 mt-0.5">Complete Graph · Cycle · Wheel · Hypercube</p>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button class="sg-tab px-3 py-1.5 rounded-full text-[12px] font-semibold border bg-blue-600 text-white border-blue-600 cursor-pointer" data-sg="complete">Complete Kₙ</button>
+                    <button class="sg-tab px-3 py-1.5 rounded-full text-[12px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:bg-[#f4f6fb] transition-all cursor-pointer" data-sg="cycle">Cycle Cₙ</button>
+                    <button class="sg-tab px-3 py-1.5 rounded-full text-[12px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:bg-[#f4f6fb] transition-all cursor-pointer" data-sg="wheel">Wheel Wₙ</button>
+                    <button class="sg-tab px-3 py-1.5 rounded-full text-[12px] font-medium border border-slate-200 bg-slate-50 text-slate-400 hover:bg-[#f4f6fb] transition-all cursor-pointer" data-sg="hypercube">Hypercube Qₙ</button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Complete -->
+                <div class="sg-panel active" id="sgp-complete">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Complete Graph Kₙ</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">
+                                <strong class="text-blue-600">Complete Graph Kₙ</strong> คือ Simple Graph บน n จุดยอด ที่มีเส้นเชื่อมระหว่างทุกคู่ของจุดยอดที่ต่างกัน <strong>ครบทุกคู่</strong>
+                            </p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">จำนวน edge = <strong class="text-blue-600">n(n−1)/2</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">ทุกจุดมี degree = <strong class="text-blue-600">n−1</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">Graph ที่ไม่ complete เรียกว่า <strong>Noncomplete</strong></li>
+                            </ul>
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-2 text-sm text-blue-700 font-mono">
+                                K₂: 1 edge &nbsp;|&nbsp; K₃: 3 edges &nbsp;|&nbsp; K₄: 6 edges &nbsp;|&nbsp; K₅: 10 edges
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center p-5 min-h-[180px]">
+                            <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                                <!-- K2 -->
+                                <circle cx="20" cy="80" r="5" fill="#2d3a6b"/>
+                                <circle cx="48" cy="80" r="5" fill="#2d3a6b"/>
+                                <line x1="25" y1="80" x2="43" y2="80" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <text x="34" y="150" font-size="11" fill="#2563eb" text-anchor="middle">K₂</text>
+                                <!-- K3 -->
+                                <polygon points="90,45 70,105 110,105" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="90" cy="45" r="5" fill="#2d3a6b"/>
+                                <circle cx="70" cy="105" r="5" fill="#2d3a6b"/>
+                                <circle cx="110" cy="105" r="5" fill="#2d3a6b"/>
+                                <text x="90" y="150" font-size="11" fill="#2563eb" text-anchor="middle">K₃</text>
+                                <!-- K4 -->
+                                <line x1="150" y1="45" x2="185" y2="45" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="150" y1="45" x2="150" y2="110" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="150" y1="45" x2="185" y2="110" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="185" y1="45" x2="150" y2="110" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="185" y1="45" x2="185" y2="110" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="150" y1="110" x2="185" y2="110" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <circle cx="150" cy="45" r="5" fill="#2d3a6b"/><circle cx="185" cy="45" r="5" fill="#2d3a6b"/>
+                                <circle cx="150" cy="110" r="5" fill="#2d3a6b"/><circle cx="185" cy="110" r="5" fill="#2d3a6b"/>
+                                <text x="168" y="150" font-size="11" fill="#2563eb" text-anchor="middle">K₄</text>
+                                <!-- K5 -->
+                                <polygon points="240,40 220,90 228,140 252,140 260,90" fill="none" stroke="#c5cfe8" stroke-width="1.3"/>
+                                <line x1="240" y1="40" x2="228" y2="140" stroke="#c5cfe8" stroke-width="1.3"/>
+                                <line x1="240" y1="40" x2="252" y2="140" stroke="#c5cfe8" stroke-width="1.3"/>
+                                <line x1="220" y1="90" x2="252" y2="140" stroke="#c5cfe8" stroke-width="1.3"/>
+                                <line x1="220" y1="90" x2="260" y2="90" stroke="#c5cfe8" stroke-width="1.3"/>
+                                <line x1="260" y1="90" x2="228" y2="140" stroke="#c5cfe8" stroke-width="1.3"/>
+                                <circle cx="240" cy="40" r="4" fill="#2d3a6b"/>
+                                <circle cx="220" cy="90" r="4" fill="#2d3a6b"/>
+                                <circle cx="228" cy="140" r="4" fill="#2d3a6b"/>
+                                <circle cx="252" cy="140" r="4" fill="#2d3a6b"/>
+                                <circle cx="260" cy="90" r="4" fill="#2d3a6b"/>
+                                <text x="240" y="158" font-size="11" fill="#2563eb" text-anchor="middle">K₅</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cycle -->
+                <div class="sg-panel hidden" id="sgp-cycle">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Cycle Cₙ</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">
+                                <strong class="text-blue-600">Cycle Cₙ</strong> (n ≥ 3) ประกอบด้วย n จุดยอด v₁, v₂, …, vₙ และมี edges {v₁,v₂}, {v₂,v₃}, …, {vₙ₋₁,vₙ}, {vₙ,v₁}
+                            </p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">จำนวน edge = <strong class="text-blue-600">n</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">ทุกจุดมี degree = <strong class="text-blue-600">2</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">รูปร่างเป็น "วงกลม" เชื่อมต่อกันครบ</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center p-5 min-h-[180px]">
+                            <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                                <!-- C3 -->
+                                <polygon points="34,40 14,105 54,105" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="34" cy="40" r="5" fill="#2d3a6b"/>
+                                <circle cx="14" cy="105" r="5" fill="#2d3a6b"/>
+                                <circle cx="54" cy="105" r="5" fill="#2d3a6b"/>
+                                <text x="34" y="148" font-size="11" fill="#2563eb" text-anchor="middle">C₃</text>
+                                <!-- C4 -->
+                                <rect x="86" y="40" width="64" height="64" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="86" cy="40" r="5" fill="#2d3a6b"/>
+                                <circle cx="150" cy="40" r="5" fill="#2d3a6b"/>
+                                <circle cx="86" cy="104" r="5" fill="#2d3a6b"/>
+                                <circle cx="150" cy="104" r="5" fill="#2d3a6b"/>
+                                <text x="118" y="148" font-size="11" fill="#2563eb" text-anchor="middle">C₄</text>
+                                <!-- C5 -->
+                                <polygon points="198,35 174,78 185,122 211,122 222,78" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="198" cy="35" r="5" fill="#2d3a6b"/>
+                                <circle cx="174" cy="78" r="5" fill="#2d3a6b"/>
+                                <circle cx="185" cy="122" r="5" fill="#2d3a6b"/>
+                                <circle cx="211" cy="122" r="5" fill="#2d3a6b"/>
+                                <circle cx="222" cy="78" r="5" fill="#2d3a6b"/>
+                                <text x="198" y="148" font-size="11" fill="#2563eb" text-anchor="middle">C₅</text>
+                                <!-- C6 -->
+                                <polygon points="258,35 238,55 238,90 258,110 278,90 278,55" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="258" cy="35" r="4" fill="#2d3a6b"/>
+                                <circle cx="238" cy="55" r="4" fill="#2d3a6b"/>
+                                <circle cx="238" cy="90" r="4" fill="#2d3a6b"/>
+                                <circle cx="258" cy="110" r="4" fill="#2d3a6b"/>
+                                <circle cx="278" cy="90" r="4" fill="#2d3a6b"/>
+                                <circle cx="278" cy="55" r="4" fill="#2d3a6b"/>
+                                <text x="258" y="148" font-size="11" fill="#2563eb" text-anchor="middle">C₆</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wheel -->
+                <div class="sg-panel hidden" id="sgp-wheel">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Wheel Wₙ</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">
+                                <strong class="text-blue-600">Wheel Wₙ</strong> ได้จากการเพิ่มจุดยอด hub 1 จุดเข้าไปใน Cycle Cₙ (n ≥ 3) แล้วต่อ edge จาก hub ไปยังทุกจุดใน Cₙ
+                            </p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">จำนวนจุดยอดทั้งหมด = <strong class="text-blue-600">n+1</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">จุด hub มี degree = <strong class="text-blue-600">n</strong></li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">จุดรอบนอกมี degree = <strong class="text-blue-600">3</strong></li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center p-5 min-h-[180px]">
+                            <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                                <!-- W3 -->
+                                <polygon points="34,35 14,100 54,100" fill="none" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="34" y1="70" x2="34" y2="35" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="34" y1="70" x2="14" y2="100" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="34" y1="70" x2="54" y2="100" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <circle cx="34" cy="35" r="4" fill="#2d3a6b"/><circle cx="14" cy="100" r="4" fill="#2d3a6b"/>
+                                <circle cx="54" cy="100" r="4" fill="#2d3a6b"/>
+                                <circle cx="34" cy="70" r="5" fill="#f43f5e"/>
+                                <text x="34" y="148" font-size="11" fill="#2563eb" text-anchor="middle">W₃</text>
+                                <!-- W4 -->
+                                <rect x="82" y="35" width="60" height="60" fill="none" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="112" y1="65" x2="82" y2="35" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="112" y1="65" x2="142" y2="35" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="112" y1="65" x2="82" y2="95" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="112" y1="65" x2="142" y2="95" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <circle cx="82" cy="35" r="4" fill="#2d3a6b"/><circle cx="142" cy="35" r="4" fill="#2d3a6b"/>
+                                <circle cx="82" cy="95" r="4" fill="#2d3a6b"/><circle cx="142" cy="95" r="4" fill="#2d3a6b"/>
+                                <circle cx="112" cy="65" r="5" fill="#f43f5e"/>
+                                <text x="112" y="148" font-size="11" fill="#2563eb" text-anchor="middle">W₄</text>
+                                <!-- W5 -->
+                                <polygon points="196,33 172,76 183,118 209,118 220,76" fill="none" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="196" y1="75" x2="196" y2="33" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="196" y1="75" x2="172" y2="76" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="196" y1="75" x2="183" y2="118" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="196" y1="75" x2="209" y2="118" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="196" y1="75" x2="220" y2="76" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <circle cx="196" cy="33" r="4" fill="#2d3a6b"/>
+                                <circle cx="172" cy="76" r="4" fill="#2d3a6b"/>
+                                <circle cx="183" cy="118" r="4" fill="#2d3a6b"/>
+                                <circle cx="209" cy="118" r="4" fill="#2d3a6b"/>
+                                <circle cx="220" cy="76" r="4" fill="#2d3a6b"/>
+                                <circle cx="196" cy="75" r="5" fill="#f43f5e"/>
+                                <text x="196" y="148" font-size="11" fill="#2563eb" text-anchor="middle">W₅</text>
+                                <text x="246" y="80" font-size="10" fill="#f43f5e" text-anchor="middle">●hub</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hypercube -->
+                <div class="sg-panel hidden" id="sgp-hypercube">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <div class="mb-3"><span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">n-dimensional Hypercube Qₙ</span></div>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">
+                                <strong class="text-blue-600">Hypercube Qₙ</strong> คือ Graph ที่มีจุดยอดแทน bit string ยาว n ทั้งหมด 2ⁿ จุด
+                            </p>
+                            <p class="text-sm text-zinc-700 leading-7 mb-3">สองจุดยอดจะ adjacent กัน ก็ต่อเมื่อ bit string ที่แทนต่างกัน <strong class="text-blue-600">เพียง 1 bit</strong> เท่านั้น</p>
+                            <ul class="space-y-1 mb-4">
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">Q₁: 2 จุด, 1 edge (0─1)</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">Q₂: 4 จุด, 4 edges (00,01,10,11)</li>
+                                <li class="step-li text-sm leading-7 text-zinc-600 mb-1">Q₃: 8 จุด, 12 edges (000–111)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl flex items-center justify-center p-5 min-h-[200px]">
+                            <svg viewBox="0 0 280 175" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[280px]">
+                                <!-- Q1 -->
+                                <circle cx="14" cy="88" r="4" fill="#2d3a6b"/>
+                                <circle cx="44" cy="88" r="4" fill="#2d3a6b"/>
+                                <line x1="18" y1="88" x2="40" y2="88" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <text x="14" y="104" font-size="9" fill="#6b7280" text-anchor="middle">0</text>
+                                <text x="44" y="104" font-size="9" fill="#6b7280" text-anchor="middle">1</text>
+                                <text x="29" y="165" font-size="11" fill="#2563eb" text-anchor="middle">Q₁</text>
+                                <!-- Q2 -->
+                                <rect x="72" y="60" width="48" height="48" fill="none" stroke="#c5cfe8" stroke-width="1.8"/>
+                                <circle cx="72" cy="60" r="4" fill="#2d3a6b"/>
+                                <circle cx="120" cy="60" r="4" fill="#2d3a6b"/>
+                                <circle cx="72" cy="108" r="4" fill="#2d3a6b"/>
+                                <circle cx="120" cy="108" r="4" fill="#2d3a6b"/>
+                                <text x="63" y="57" font-size="8" fill="#6b7280">00</text>
+                                <text x="122" y="57" font-size="8" fill="#6b7280">01</text>
+                                <text x="63" y="120" font-size="8" fill="#6b7280">10</text>
+                                <text x="122" y="120" font-size="8" fill="#6b7280">11</text>
+                                <text x="96" y="165" font-size="11" fill="#2563eb" text-anchor="middle">Q₂</text>
+                                <!-- Q3 -->
+                                <!-- outer square -->
+                                <rect x="158" y="40" width="70" height="70" fill="none" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <!-- inner square -->
+                                <rect x="175" y="57" width="36" height="36" fill="none" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <!-- connectors -->
+                                <line x1="158" y1="40" x2="175" y2="57" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="228" y1="40" x2="211" y2="57" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="158" y1="110" x2="175" y2="93" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <line x1="228" y1="110" x2="211" y2="93" stroke="#c5cfe8" stroke-width="1.5"/>
+                                <!-- nodes outer -->
+                                <circle cx="158" cy="40" r="3.5" fill="#2d3a6b"/>
+                                <circle cx="228" cy="40" r="3.5" fill="#2d3a6b"/>
+                                <circle cx="158" cy="110" r="3.5" fill="#2d3a6b"/>
+                                <circle cx="228" cy="110" r="3.5" fill="#2d3a6b"/>
+                                <!-- nodes inner -->
+                                <circle cx="175" cy="57" r="3.5" fill="#2d3a6b"/>
+                                <circle cx="211" cy="57" r="3.5" fill="#2d3a6b"/>
+                                <circle cx="175" cy="93" r="3.5" fill="#2d3a6b"/>
+                                <circle cx="211" cy="93" r="3.5" fill="#2d3a6b"/>
+                                <!-- labels Q3 -->
+                                <text x="148" y="37" font-size="7" fill="#6b7280">000</text>
+                                <text x="230" y="37" font-size="7" fill="#6b7280">001</text>
+                                <text x="148" y="120" font-size="7" fill="#6b7280">010</text>
+                                <text x="230" y="120" font-size="7" fill="#6b7280">011</text>
+                                <text x="165" y="54" font-size="7" fill="#6b7280">100</text>
+                                <text x="213" y="54" font-size="7" fill="#6b7280">101</text>
+                                <text x="165" y="103" font-size="7" fill="#6b7280">110</text>
+                                <text x="213" y="103" font-size="7" fill="#6b7280">111</text>
+                                <text x="193" y="165" font-size="11" fill="#2563eb" text-anchor="middle">Q₃</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+    // ===== SIDEBAR TOGGLE =====
+    document.getElementById('toggleBtn').addEventListener('click', () => {
+        const sb = document.getElementById('sidebar');
+        sb.classList.toggle('collapsed');
+        document.getElementById('prevIcon').classList.toggle('hidden');
+        document.getElementById('nextIcon').classList.toggle('hidden');
+    });
+
+    // ===== TERM TABS (Definition 4 & 5) =====
+    document.querySelectorAll('.term-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.term-tab').forEach(b => {
+                b.classList.remove('bg-blue-600','text-white','border-blue-600','font-semibold');
+                b.classList.add('bg-slate-50','text-slate-400','border-slate-200');
+            });
+            btn.classList.add('bg-blue-600','text-white','border-blue-600','font-semibold');
+            btn.classList.remove('bg-slate-50','text-slate-400','border-slate-200');
+            document.querySelectorAll('.term-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tp-' + btn.dataset.target).classList.add('active');
+        });
+    });
+
+    // ===== SPECIAL GRAPH TABS =====
+    document.querySelectorAll('.sg-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.sg-tab').forEach(b => {
+                b.classList.remove('bg-blue-600','text-white','border-blue-600','font-semibold');
+                b.classList.add('bg-slate-50','text-slate-400','border-slate-200','font-medium');
+            });
+            btn.classList.add('bg-blue-600','text-white','border-blue-600','font-semibold');
+            btn.classList.remove('bg-slate-50','text-slate-400','border-slate-200','font-medium');
+            document.querySelectorAll('.sg-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('sgp-' + btn.dataset.sg).classList.remove('hidden');
+        });
+    });
+
+    // ===== INTERACTIVE: In/Out degree graph =====
+    (function() {
+        const NODES = [
+            {id:'a', x:40,  y:50},
+            {id:'b', x:110, y:30},
+            {id:'c', x:180, y:80},
+            {id:'d', x:150, y:160},
+            {id:'e', x:60,  y:160},
+        ];
+        // [from, to]
+        const EDGES = [
+            ['a','b'],['a','c'],
+            ['b','c'],
+            ['c','d'],
+            ['d','a'],['d','e'],
+            ['e','b'],['e','d'],
+        ];
+        // precompute in/out
+        const IN = {}, OUT = {};
+        NODES.forEach(n => { IN[n.id]=0; OUT[n.id]=0; });
+        EDGES.forEach(([u,v]) => { OUT[u]++; IN[v]++; });
+        // loop on c
+        IN['c']++; OUT['c']++;
+
+        let sel = null;
+        const svg = document.getElementById('deg-svg');
+        const NS = 'http://www.w3.org/2000/svg';
+
+        // pairs that are bidirectional (need curve offset to avoid overlap)
+        const BIDIR_PAIRS = new Set();
+        EDGES.forEach(([u,v]) => {
+            if(EDGES.some(([a,b])=>a===v&&b===u)) {
+                const key = [u,v].sort().join('-');
+                BIDIR_PAIRS.add(key);
+            }
+        });
+
+        function render() {
+            document.getElementById('deg-edges').innerHTML = '';
+            document.getElementById('deg-nodes').innerHTML = '';
+            const eG = document.getElementById('deg-edges');
+            const nG = document.getElementById('deg-nodes');
+
+            // loop on c
+            const cNode = NODES.find(n=>n.id==='c');
+            const ell = document.createElementNS(NS,'ellipse');
+            ell.setAttribute('cx', cNode.x+20); ell.setAttribute('cy', cNode.y-6);
+            ell.setAttribute('rx',14); ell.setAttribute('ry',9);
+            ell.setAttribute('fill','none');
+            const loopColor = sel==='c' ? '#2563eb' : sel ? '#d1d5db' : '#c5cfe8';
+            ell.setAttribute('stroke', loopColor);
+            ell.setAttribute('stroke-width','1.8');
+            eG.appendChild(ell);
+
+            EDGES.forEach(([u,v]) => {
+                const nu = NODES.find(n=>n.id===u);
+                const nv = NODES.find(n=>n.id===v);
+                const isOut = sel===u;
+                const isIn  = sel===v;
+                const color  = sel ? (isOut ? '#f43f5e' : isIn ? '#2563eb' : '#d1d5db') : '#c5cfe8';
+                const markId = sel
+                    ? (isOut ? 'deg-arh-rose' : isIn ? 'deg-arh-blue' : 'deg-arh-dim')
+                    : 'deg-arh-default';
+
+                const dx = nv.x - nu.x, dy = nv.y - nu.y;
+                const len = Math.sqrt(dx*dx+dy*dy);
+                const ux = dx/len, uy = dy/len;
+                // start/end just outside node radius
+                const x1 = nu.x + ux*8,  y1 = nu.y + uy*8;
+                const x2 = nv.x - ux*11, y2 = nv.y - uy*11;
+
+                const key = [u,v].sort().join('-');
+                const isBidir = BIDIR_PAIRS.has(key);
+
+                if (isBidir) {
+                    // curve the two opposite edges so they don't overlap
+                    // perpendicular offset direction
+                    const px = -uy, py = ux;
+                    const offset = 12;
+                    const mx = (x1+x2)/2 + px*offset;
+                    const my = (y1+y2)/2 + py*offset;
+                    const path = document.createElementNS(NS,'path');
+                    path.setAttribute('d', `M${x1},${y1} Q${mx},${my} ${x2},${y2}`);
+                    path.setAttribute('fill','none');
+                    path.setAttribute('stroke', color);
+                    path.setAttribute('stroke-width', (isOut||isIn) ? '2.2':'1.6');
+                    path.setAttribute('marker-end', `url(#${markId})`);
+                    eG.appendChild(path);
+                } else {
+                    const line = document.createElementNS(NS,'line');
+                    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+                    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+                    line.setAttribute('stroke', color);
+                    line.setAttribute('stroke-width', (isOut||isIn) ? '2.2':'1.6');
+                    line.setAttribute('marker-end', `url(#${markId})`);
+                    eG.appendChild(line);
+                }
+            });
+
+            NODES.forEach(n => {
+                const isSel = sel===n.id;
+                const isDim = sel && !isSel;
+                const g = document.createElementNS(NS,'g');
+                g.style.cursor='pointer';
+                g.addEventListener('click',()=>{ sel = sel===n.id ? null : n.id; render(); });
+
+                const c = document.createElementNS(NS,'circle');
+                c.setAttribute('cx',n.x); c.setAttribute('cy',n.y);
+                c.setAttribute('r', isSel?9:6);
+                c.setAttribute('fill', isSel ? '#2563eb' : isDim ? '#d1d5db' : '#2d3a6b');
+                c.setAttribute('stroke','#fff'); c.setAttribute('stroke-width','2');
+
+                const t = document.createElementNS(NS,'text');
+                t.setAttribute('x',n.x); t.setAttribute('y',n.y-13);
+                t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','12');
+                t.setAttribute('font-weight', isSel?'700':'600');
+                t.setAttribute('fill', isSel?'#2563eb': isDim?'#9ca3af':'#2d3a6b');
+                t.textContent = n.id;
+
+                g.appendChild(c); g.appendChild(t); nG.appendChild(g);
+            });
+
+            const info = document.getElementById('deg-info');
+            if(!sel) {
+                info.innerHTML='<span class="text-zinc-400">กดที่จุดยอดบนกราฟ...</span>';
+            } else {
+                info.innerHTML = `
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <span class="font-bold text-zinc-700">vertex <span class="text-blue-600">${sel}</span></span>
+                        <span class="bg-blue-50 text-blue-700 border border-blue-100 rounded-lg px-2 py-0.5 text-xs font-mono">deg⁻ = ${IN[sel]}</span>
+                        <span class="bg-rose-50 text-rose-600 border border-rose-100 rounded-lg px-2 py-0.5 text-xs font-mono">deg⁺ = ${OUT[sel]}</span>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-1">
+                        เส้น <span class="text-blue-600 font-semibold">สีน้ำเงิน</span> = เข้า (in) · 
+                        เส้น <span class="text-rose-500 font-semibold">สีแดง</span> = ออก (out)
+                    </p>`;
+            }
+        }
+        render();
+    })();
+
+    // ===== THEOREM 3 INTERACTIVE =====
+    const TH3_POS = {P:[50,80], Q:[130,30], R:[210,80], S:[130,130]};
+    let th3Edges = [];
+
+    function updateTh3() {
+        const g = document.getElementById('th3-edges');
+        g.innerHTML = '';
+        const NS = 'http://www.w3.org/2000/svg';
+        const deg = {P:{i:0,o:0},Q:{i:0,o:0},R:{i:0,o:0},S:{i:0,o:0}};
+
+        th3Edges.forEach(([u,v]) => {
+            const [x1,y1]=TH3_POS[u], [x2,y2]=TH3_POS[v];
+            const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+            const ux=dx/len,uy=dy/len;
+            const line=document.createElementNS(NS,'line');
+            line.setAttribute('x1',x1+ux*9); line.setAttribute('y1',y1+uy*9);
+            line.setAttribute('x2',x2-ux*11); line.setAttribute('y2',y2-uy*11);
+            line.setAttribute('stroke','#2563eb'); line.setAttribute('stroke-width','1.8');
+            line.setAttribute('marker-end','url(#arw3)');
+            g.appendChild(line);
+            deg[u].o++; deg[v].i++;
+        });
+
+        ['P','Q','R','S'].forEach(v => {
+            document.getElementById('in'+v).textContent = deg[v].i;
+            document.getElementById('out'+v).textContent = deg[v].o;
+        });
+        const e = th3Edges.length;
+        const sumIn = Object.values(deg).reduce((s,d)=>s+d.i,0);
+        const sumOut = Object.values(deg).reduce((s,d)=>s+d.o,0);
+        document.getElementById('th3E').textContent = e;
+        document.getElementById('th3In').textContent = sumIn;
+        document.getElementById('th3Out').textContent = sumOut;
+        const chk = document.getElementById('th3-check');
+        if(e>0 && sumIn===e && sumOut===e) {
+            chk.textContent = '✓ |E| = Σdeg⁻ = Σdeg⁺';
+            chk.className = 'text-xs font-semibold text-green-600 pop';
+        } else { chk.textContent = ''; }
+    }
+
+    function addDirEdge(u,v) {
+        const exists = th3Edges.some(([a,b])=>a===u&&b===v);
+        if(!exists) th3Edges.push([u,v]);
+        updateTh3();
+    }
+
+    function resetTh3() {
+        th3Edges = [];
+        updateTh3();
+    }
+    </script>
+</body>
+</html>
